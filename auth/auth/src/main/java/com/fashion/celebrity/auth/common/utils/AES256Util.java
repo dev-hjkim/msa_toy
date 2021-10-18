@@ -6,10 +6,8 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.security.NoSuchAlgorithmException;
 
 public class AES256Util {
 
@@ -17,7 +15,7 @@ public class AES256Util {
     private static String key = "afc6c6ac80f54202948f2828d694ec93";
 
     public static String encrypt(String str) throws
-            GeneralSecurityException, UnsupportedEncodingException {
+            GeneralSecurityException {
         byte[] keyData = key.getBytes();
         SecretKey secureKey = new SecretKeySpec(keyData, "AES");
 
@@ -28,7 +26,7 @@ public class AES256Util {
     }
 
     public static String decrypt(String str) throws
-            GeneralSecurityException, UnsupportedEncodingException {
+            GeneralSecurityException {
         byte[] keyData = key.getBytes();
         SecretKey secureKey = new SecretKeySpec(keyData, "AES");
 

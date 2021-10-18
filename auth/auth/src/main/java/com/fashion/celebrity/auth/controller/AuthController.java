@@ -23,10 +23,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 @RestController
 public class AuthController {
@@ -71,10 +67,10 @@ public class AuthController {
             try {
                 this.authService.createMail(dto.getUsername());
 
-                boolean sended;
-                sended = this.authService.sendEmail(dto);
+                boolean sent;
+                sent = this.authService.sendEmail(dto);
 
-                if (sended) {
+                if (sent) {
                     apiInfo.setSuccess(true);
                     apiInfo.setCode("SS03");
                     apiInfo.setMessage("인증번호를 발송하였습니다.");
@@ -153,7 +149,7 @@ public class AuthController {
             apiInfo.setCode("SE06");
             apiInfo.setMessage("이미 존재하는 닉네임입니다.");
         } else {
-            apiInfo.setSuccess(false);
+            apiInfo.setSuccess(true);
             apiInfo.setCode("SS06");
             apiInfo.setMessage("사용 가능한 닉네임입니다.");
         }
@@ -166,7 +162,7 @@ public class AuthController {
 
     /**
      * request: username, password, nickname, phone, gender, birthDt, mktYn, pathCode
-     * response: apiInfo(obj: userId, channelCd
+     * response: apiInfo(obj: userId, channelCd)
      * desc: 회원가입
      *
      *
@@ -227,11 +223,6 @@ public class AuthController {
         logger.info("Login {}", dto);
 
         ApiInfo apiInfo = new ApiInfo();
-
-        // 현재 날짜
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
         // 접속자의 ip 주소
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
@@ -376,7 +367,7 @@ public class AuthController {
         ResFindIdDto user = this.authService.findId(dto.getPhone());
 
         if (user != null) {
-            apiInfo.setSuccess(false);
+            apiInfo.setSuccess(true);
             apiInfo.setCode("SS01");
             apiInfo.setMessage("조회에 성공하였습니다.");
             apiInfo.setObj(user);
@@ -412,7 +403,7 @@ public class AuthController {
         ResFindPwDto user = this.authService.findPw(dto);
 
         if (user != null) {
-            apiInfo.setSuccess(false);
+            apiInfo.setSuccess(true);
             apiInfo.setCode("SS01");
             apiInfo.setMessage("조회에 성공하였습니다.");
         } else {
