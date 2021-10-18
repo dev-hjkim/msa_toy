@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: gw
+  cloud:
+    gateway:
+      routes:
+        - id: auth
+          uri: http://localhost:8001
+          predicates:
+            - Path=/v1/auth/**
+          filters:
+            - RewritePath=/v1/auth/?(?<segment>.*), /$\{segment}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+server:
+  port: 8000
