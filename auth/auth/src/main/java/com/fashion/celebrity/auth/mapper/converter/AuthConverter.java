@@ -1,5 +1,6 @@
 package com.fashion.celebrity.auth.mapper.converter;
 
+import com.fashion.celebrity.auth.dto.UserDto;
 import com.fashion.celebrity.auth.dto.response.ResFindIdDto;
 import com.fashion.celebrity.auth.dto.response.ResFindPwDto;
 import com.fashion.celebrity.auth.dto.response.ResLoginDto;
@@ -16,6 +17,9 @@ public interface AuthConverter {
 
     @Mapping(source = "userId", target="username")
     @Mapping(source = "passwd", target="password")
+    UserDto convertAuthLogin(UserInfo userInfo);
+
+    @Mapping(source = "userId", target="username")
     ResLoginDto convertLogin(UserInfo userInfo);
 
     @Mapping(source = "userId", target="username")

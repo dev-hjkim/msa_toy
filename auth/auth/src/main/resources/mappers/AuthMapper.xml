@@ -2,6 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fashion.celebrity.auth.mapper.AuthMapper">
 
+    <select id="selectAuthUser" parameterType="String" resultType="com.fashion.celebrity.auth.model.UserInfo">
+        SELECT user_id, passwd
+        FROM tb_user
+        WHERE user_id = #{username}
+    </select>
+
     <select id="selectDupMail" parameterType="com.fashion.celebrity.auth.dto.request.ReqDupMailDto" resultType="com.fashion.celebrity.auth.model.DupUserInfo">
         SELECT user_id
         FROM tb_user

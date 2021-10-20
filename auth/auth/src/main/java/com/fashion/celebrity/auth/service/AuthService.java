@@ -1,5 +1,6 @@
 package com.fashion.celebrity.auth.service;
 
+import com.fashion.celebrity.auth.dto.UserDto;
 import com.fashion.celebrity.auth.dto.request.*;
 import com.fashion.celebrity.auth.dto.response.ResFindIdDto;
 import com.fashion.celebrity.auth.dto.response.ResFindPwDto;
@@ -7,6 +8,9 @@ import com.fashion.celebrity.auth.dto.response.ResLoginDto;
 import com.fashion.celebrity.auth.model.DupUserInfo;
 
 public interface AuthService {
+    /* 유저정보 조회(UserDetails) */
+    UserDto selectAuthUser(String username);
+
     /* 이메일 중복 체크 */
     DupUserInfo selectDupMail(ReqDupMailDto dto);
 

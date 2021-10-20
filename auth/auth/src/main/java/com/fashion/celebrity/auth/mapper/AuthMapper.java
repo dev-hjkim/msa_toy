@@ -5,8 +5,11 @@ import com.fashion.celebrity.auth.model.DupUserInfo;
 import com.fashion.celebrity.auth.model.FindIdInfo;
 import com.fashion.celebrity.auth.model.FindPwInfo;
 import com.fashion.celebrity.auth.model.UserInfo;
+import org.apache.ibatis.annotations.Mapper;
 
+@Mapper
 public interface AuthMapper {
+    UserInfo selectAuthUser(String username);
     DupUserInfo selectDupMail(ReqDupMailDto dto);
     int createMail(String username);
     int updateCertCode(ReqDupMailDto dto);

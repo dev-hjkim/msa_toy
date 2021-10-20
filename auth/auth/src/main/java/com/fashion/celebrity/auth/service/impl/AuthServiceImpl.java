@@ -1,5 +1,6 @@
 package com.fashion.celebrity.auth.service.impl;
 
+import com.fashion.celebrity.auth.dto.UserDto;
 import com.fashion.celebrity.auth.dto.request.*;
 import com.fashion.celebrity.auth.dto.response.ResFindIdDto;
 import com.fashion.celebrity.auth.dto.response.ResFindPwDto;
@@ -31,6 +32,12 @@ public class AuthServiceImpl implements AuthService {
 
     private static final String FROM_ADDRESS = "guswlsapdlf@gmail.com";
     private static final String RANDOM_SAMPLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklnmopqrstuvwxyz0123456789";
+
+    @Override
+    public UserDto selectAuthUser(String username) {
+        UserInfo userInfo = this.authMapper.selectAuthUser(username);
+        return this.authConverter.INSTANCE.convertAuthLogin(userInfo);
+    }
 
     @Override
     public DupUserInfo selectDupMail(ReqDupMailDto dto) {
