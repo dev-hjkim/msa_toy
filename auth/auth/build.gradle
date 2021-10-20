@@ -2,7 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.5.5'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
-	id 'org.asciidoctor.convert' version '1.5.8' // asciidoctor plugin
+//	id 'org.asciidoctor.convert' version '1.5.8' // asciidoctor plugin
 }
 
 group = 'com.fashion.celebrity'
@@ -13,9 +13,9 @@ repositories {
 	mavenCentral()
 }
 
-ext {
-	set('snippetsDir', file("build/generated-snippets")) // 문서 저장위치
-}
+//ext {
+//	set('snippetsDir', file("build/generated-snippets")) // 문서 저장위치
+//}
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter:2.5.5'
@@ -23,6 +23,7 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:3.0.4'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.5'
 
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc:2.5.5'
 	implementation 'org.projectlombok:lombok:1.18.22'
 	runtimeOnly 'mysql:mysql-connector-java:8.0.25'
@@ -42,31 +43,31 @@ dependencies {
 	testImplementation 'org.springframework.restdocs:spring-restdocs-webtestclient:2.0.5.RELEASE' // webtestclient용
 }
 
-test {
-	outputs.dir snippetsDir // 선언한 디렉토리에 생성
-	useJUnitPlatform()
-}
-
-asciidoctor {
-	attributes 'snippets': snippetsDir // adoc 파일 생성시 올바르게 include하기 위함
-	inputs.dir snippetsDir
-	dependsOn test
-}
-
-bootJar {
-	dependsOn asciidoctor
-	from ("${asciidoctor.outputDir}/html5") { // gradle은 src/docs/asciidoc 에 메인 adoc생성!
-		into 'static/docs' // asciidoctor로 만든 문서는 static/docs 디렉토리로.!
-	}
-}
-
-task copyDocument(type: Copy) { // 생성된 docs 파일을 build시 static 아래에 docs로 복사!
-	dependsOn bootJar
-
-	from file("build/asciidoc/html5/")
-	into file("src/main/resources/static/docs")
-}
-
-build {
-	dependsOn copyDocument // build시 copy 실행
-}
+//test {
+//	outputs.dir snippetsDir // 선언한 디렉토리에 생성
+//	useJUnitPlatform()
+//}
+//
+//asciidoctor {
+//	attributes 'snippets': snippetsDir // adoc 파일 생성시 올바르게 include하기 위함
+//	inputs.dir snippetsDir
+//	dependsOn test
+//}
+//
+//bootJar {
+//	dependsOn asciidoctor
+//	from ("${asciidoctor.outputDir}/html5") { // gradle은 src/docs/asciidoc 에 메인 adoc생성!
+//		into 'static/docs' // asciidoctor로 만든 문서는 static/docs 디렉토리로.!
+//	}
+//}
+//
+//task copyDocument(type: Copy) { // 생성된 docs 파일을 build시 static 아래에 docs로 복사!
+//	dependsOn bootJar
+//
+//	from file("build/asciidoc/html5/")
+//	into file("src/main/resources/static/docs")
+//}
+//
+//build {
+//	dependsOn copyDocument // build시 copy 실행
+//}
