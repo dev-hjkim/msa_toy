@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fashion.celebrity.auth.mapper.SurveyMapper">
+
+    <select id="selectGoodList" resultType="com.fashion.celebrity.auth.model.CodeInfo">
+        SELECT code, code_nm
+        FROM tb_code
+        WHERE grp_cd = 'Advantage'
+    </select>
+
+    <select id="selectBadList" resultType="com.fashion.celebrity.auth.model.CodeInfo">
+        SELECT code, code_nm
+        FROM tb_code
+        WHERE grp_cd = 'Disadvantage'
+    </select>
+
+    <select id="selectStyleList" resultType="com.fashion.celebrity.auth.model.CodeInfo">
+        SELECT code, code_nm
+        FROM tb_code
+        WHERE grp_cd = 'Style'
+    </select>
+
+    <select id="selectColorList" resultType="com.fashion.celebrity.auth.model.ColorCodeInfo">
+        SELECT code, code_dt, code_nm
+        FROM tb_code
+        WHERE grp_cd = 'Color'
+    </select>
+
+    <update id="createSurveyAnswer" parameterType="com.fashion.celebrity.auth.dto.request.ReqSurveyDto">
+        INSERT INTO tb_survey
+        (user_id, skin_cd, height, weight, body_adv_cd1, body_adv_cd2,
+        body_disadv_cd1, body_disadv_cd2, fav_style_cd,
+        fav_color_cd1, fav_color_cd2, reg_dt)
+        VALUES
+        (#{username}, #{skin}, #{height}, #{weight}, #{bodyGood1}, #{bodyGood2},
+        #{bodyBad1}, #{bodyBad2}, #{style},
+        #{color1}, #{color2}, now())
+    </update>
+
+</mapper>
