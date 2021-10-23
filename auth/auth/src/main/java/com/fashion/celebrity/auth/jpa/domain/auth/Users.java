@@ -1,4 +1,4 @@
-package com.fashion.celebrity.auth.domain.users;
+package com.fashion.celebrity.auth.jpa.domain.auth;
 
 import lombok.Builder;
 import lombok.Getter;

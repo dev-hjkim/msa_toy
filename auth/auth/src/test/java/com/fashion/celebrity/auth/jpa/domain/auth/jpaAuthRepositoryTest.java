@@ -1,4 +1,4 @@
-package com.fashion.celebrity.auth.domain.users;
+package com.fashion.celebrity.auth.jpa.domain.auth;
 
 import org.junit.After;
 import org.junit.Test;
@@ -13,14 +13,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class UsersRepositoryTest {
+public class jpaAuthRepositoryTest {
 
     @Autowired
-    UsersRepository usersRepository;
+    JpaAuthRepository jpaAuthRepository;
 
     @After
     public void cleanup() {
-        usersRepository.deleteAll();
+        jpaAuthRepository.deleteAll();
     }
 
     @Test
@@ -31,7 +31,7 @@ public class UsersRepositoryTest {
         Integer loginCnt = 0;
         String cnlCd = "01";
 
-        usersRepository.save(Users.builder()
+        jpaAuthRepository.save(Users.builder()
                 .userId(userId)
                 .status(status)
                 .loginCnt(loginCnt)
@@ -39,7 +39,7 @@ public class UsersRepositoryTest {
                 .build());
 
         // when
-        List<Users> usersList = usersRepository.findAll();
+        List<Users> usersList = jpaAuthRepository.findAll();
 
         // then
         Users users = usersList.get(0);
