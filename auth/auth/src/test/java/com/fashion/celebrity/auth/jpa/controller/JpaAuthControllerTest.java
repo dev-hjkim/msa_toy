@@ -40,7 +40,7 @@ public class JpaAuthControllerTest {
                 .userId(userId)
                 .build();
 
-        String url = "http://localhost:"+port+"/jpa/validate/mail";
+        String url = "http://192.168.1.16:"+port+"/jpa/validate/mail";
 
         // when
         ResponseEntity<Boolean> responseEntity = restTemplate.postForEntity(url, requestDto, Boolean.class);

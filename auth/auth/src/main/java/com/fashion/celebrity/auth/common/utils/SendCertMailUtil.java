@@ -6,11 +6,9 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
 public class SendCertMailUtil {
-
-    private static JavaMailSender javaMailSender;
     private static Logger logger = LoggerFactory.getLogger(SendCertMailUtil.class);
 
-    public static boolean sendMail(String email, String certCode) {
+    public static boolean sendMail(JavaMailSender javaMailSender, String email, String certCode) {
         boolean sendMail;
 
         try {
@@ -18,6 +16,7 @@ public class SendCertMailUtil {
             message.setTo(email);
             message.setSubject("[Celebrity] 회원가입 인증 메일");
             message.setText("인증 번호는 [" + certCode + "] 입니다.");
+
             javaMailSender.send(message);
 
             sendMail = true;

@@ -26,11 +26,14 @@ public class Users {
     @Column(length=2, nullable = false)
     private String cnlCd;
 
+    private String certNum;
+
     @Builder
-    public Users(String userId, String status, Integer loginCnt, String cnlCd) {
+    public Users(String userId, String status, Integer loginCnt, String cnlCd, String certNum) {
         this.userId = userId;
         this.status = status;
         this.loginCnt = loginCnt;
         this.cnlCd = cnlCd;
+        this.certNum = certNum;
     }
 }

@@ -6,6 +6,4 @@ public interface JpaAuthRepository extends JpaRepository<Users, Long> {
 
 
     String findByUserId(String userId);
-
-    void saveCert(String userId, String certCode);
 }
