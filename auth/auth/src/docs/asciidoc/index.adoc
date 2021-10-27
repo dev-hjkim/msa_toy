@@ -1,0 +1,85 @@
+= Rest Docs Sample API Document
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+
+ifndef::snippets[]
+:snippets: ../../../build/generated-snippets
+endif::[]
+
+
+[[common]]
+== 공통 사항
+
+API에 관계없이 아래 사항을 지켜주셔야 합니다.
+
+=== Domain
+
+|===
+| 환경 | domain
+
+| 개발서버
+| `http://192.168.1.16:????`
+|===
+
+
+=== Header
+
+|===
+| name | description
+
+| `Authorization`
+| API를 사용하기 위한 인증 키
+|===
+
+=== 공통 Response Body
+
+|===
+| field | required | description
+
+| `success`
+| Y
+| api 성공 여부
+
+| `code`
+| Y
+| api 응답 코드
+
+| `message`
+| Y
+| api 응답 메시지
+
+| `obj`
+| N
+| api 응답 객체
+|===
+
+[[Auth]]
+== Auth API
+
+=== Request
+
+CURL:
+
+include::{snippets}/hello-world/curl-request.adoc[]
+
+Request Parameters:
+
+include::{snippets}/hello-world/request-parameters.adoc[]
+
+Request HTTP Example:
+
+include::{snippets}/hello-world/http-request.adoc[]
+
+=== Response
+
+Response Fields:
+
+include::{snippets}/hello-world/response-fields.adoc[]
+
+Response HTTP Example:
+
+include::{snippets}/hello-world/http-response.adoc[]

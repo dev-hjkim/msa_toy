@@ -1,25 +1,18 @@
 package com.fashion.celebrity.auth.config;
 
-import org.springframework.boot.test.autoconfigure.restdocs.RestDocsMockMvcConfigurationCustomizer;
-import org.springframework.boot.test.autoconfigure.restdocs.RestDocsWebTestClientConfigurationCustomizer;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import org.springframework.restdocs.operation.preprocess.OperationRequestPreprocessor;
+import org.springframework.restdocs.operation.preprocess.OperationResponsePreprocessor;
 
-@TestConfiguration
-public class RestDocConfiguration {
-    @Bean
-    public RestDocsMockMvcConfigurationCustomizer restDocsMockMvcConfigurationCustomizer() {
-        return configurer -> configurer.operationPreprocessors()
-                .withRequestDefaults(prettyPrint())
-                .withResponseDefaults(prettyPrint());
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+
+public interface RestDocConfiguration {
+
+    static OperationRequestPreprocessor getDocumentRequest() {
+        return preprocessRequest(prettyPrint());
     }
 
-    @Bean
-    public RestDocsWebTestClientConfigurationCustomizer restDocsWebTestClientConfigurationCustomizer() {
-        return configurer -> configurer.operationPreprocessors()
-                .withRequestDefaults(prettyPrint())
-                .withResponseDefaults(prettyPrint());
+    static OperationResponsePreprocessor getDocumentResponse() {
+        return preprocessResponse(prettyPrint());
     }
 }
