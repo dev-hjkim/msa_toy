@@ -22,8 +22,9 @@ public class JpaAuthService {
 
 
     @Transactional
-    public boolean validateMail(ValidateMailRequestDto requestDto) {
-        boolean sendMail;
+    public String validateMail(ValidateMailRequestDto requestDto) {
+        String status;
+        boolean isSent;
 
         String userId = jpaAuthRepository.findByUserId(requestDto.getUserId());
 
@@ -39,10 +40,16 @@ public class JpaAuthService {
                             .certNum(certCode)
                             .build());
 
-            sendMail = SendCertMailUtil.sendMail(javaMailSender, requestDto.getUserId(), certCode);
+            isSent = SendCertMailUtil.sendMail(javaMailSender, requestDto.getUserId(), certCode);
+
+            if (isSent) {
+                status = "01";
+            } else {
+                status = "02";
+            }
         } else {
-            sendMail = false;
+            status = "03";
         }
-        return sendMail;
+        return status;
     }
 }

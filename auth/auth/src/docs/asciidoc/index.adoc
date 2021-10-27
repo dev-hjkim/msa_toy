@@ -7,7 +7,7 @@
 :sectlinks:
 
 ifndef::snippets[]
-:snippets: ../../../build/generated-snippets
+:snippets: build/generated-snippets
 endif::[]
 
 
@@ -60,26 +60,10 @@ API에 관계없이 아래 사항을 지켜주셔야 합니다.
 [[Auth]]
 == Auth API
 
-=== Request
-
-CURL:
-
-include::{snippets}/hello-world/curl-request.adoc[]
-
-Request Parameters:
-
-include::{snippets}/hello-world/request-parameters.adoc[]
-
-Request HTTP Example:
-
-include::{snippets}/hello-world/http-request.adoc[]
-
-=== Response
-
-Response Fields:
-
-include::{snippets}/hello-world/response-fields.adoc[]
-
-Response HTTP Example:
-
-include::{snippets}/hello-world/http-response.adoc[]
+=== validateMail
+==== Request
+include::{snippets}/ValidateMail/request-fields.adoc[]
+include::{snippets}/ValidateMail/http-request.adoc[]
+==== Response
+include::{snippets}/ValidateMail/response-fields.adoc[]
+include::{snippets}/ValidateMail/http-response.adoc[]

@@ -2,7 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.5.5'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
-	id 'org.asciidoctor.convert' version '1.5.8' // asciidoctor plugin
+	id 'org.asciidoctor.jvm.convert' version '3.3.2' // asciidoctor plugin
 }
 
 group = 'com.fashion.celebrity'
@@ -64,17 +64,27 @@ asciidoctor {
 	dependsOn test
 }
 
+asciidoctor.doFirst {
+	println("---------------- delete present asciidoctor.")
+	delete file('src/main/resources/static/docs')
+}
+
+asciidoctor.doLast {
+	println("---------------- asciidoctor is deleted!")
+}
+
+
 bootJar {
 	dependsOn asciidoctor
-	from ("${asciidoctor.outputDir}/html5") { // gradle은 src/docs/asciidoc 에 메인 adoc생성!
-		into 'static/docs' // asciidoctor로 만든 문서는 static/docs 디렉토리로.!
+	from ("${asciidoctor.outputDir}") {
+		into 'static/docs'
 	}
 }
 
 task copyDocument(type: Copy) { // 생성된 docs 파일을 build시 static 아래에 docs로 복사!
 	dependsOn bootJar
 
-	from file("build/asciidoc/html5/")
+	from file("build/docs/asciidoc/")
 	into file("src/main/resources/static/docs")
 }
 
