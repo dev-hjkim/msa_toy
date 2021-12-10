@@ -4,7 +4,6 @@ import com.fashion.celebrity.auth.common.dto.ApiDto;
 import com.fashion.celebrity.auth.common.dto.AuthResCode;
 import com.fashion.celebrity.auth.common.security.JwtTokenProvider;
 import com.fashion.celebrity.auth.dto.*;
-import com.fashion.celebrity.auth.dto.request.*;
 import com.fashion.celebrity.auth.model.DupUserInfo;
 import com.fashion.celebrity.auth.service.AuthService;
 import org.slf4j.Logger;
