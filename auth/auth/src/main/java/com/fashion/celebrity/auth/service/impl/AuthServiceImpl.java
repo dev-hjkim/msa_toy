@@ -1,10 +1,6 @@
 package com.fashion.celebrity.auth.service.impl;
 
-import com.fashion.celebrity.auth.dto.UserDto;
-import com.fashion.celebrity.auth.dto.request.*;
-import com.fashion.celebrity.auth.dto.response.ResFindIdDto;
-import com.fashion.celebrity.auth.dto.response.ResFindPwDto;
-import com.fashion.celebrity.auth.dto.response.ResLoginDto;
+import com.fashion.celebrity.auth.dto.*;
 import com.fashion.celebrity.auth.mapper.AuthMapper;
 import com.fashion.celebrity.auth.mapper.converter.AuthConverter;
 import com.fashion.celebrity.auth.model.DupUserInfo;
@@ -40,17 +36,17 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public DupUserInfo selectDupMail(ReqDupMailDto dto) {
+    public DupUserInfo selectDupMail(ValidateDtos.RequestEmail dto) {
         return this.authMapper.selectDupMail(dto);
     }
 
     @Override
-    public int createMail(String username) {
-        return this.authMapper.createMail(username);
+    public int createEmail(String email) {
+        return this.authMapper.createEmail(email);
     }
 
     @Override
-    public boolean sendEmail(ReqDupMailDto dto) {
+    public boolean sendEmail(ValidateDtos.RequestEmail dto) {
         boolean sendMail;
 
         String certCode = "";
@@ -67,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
 
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(dto.getUsername());
+            message.setTo(dto.getEmail());
             message.setSubject("[Celebrity] 회원가입 인증 메일");
             message.setText("인증 번호는 [" + certCode + "] 입니다.");
             javaMailSender.send(message);
@@ -81,8 +77,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String selectCertCode(String username) {
-        return this.authMapper.selectCertCode(username);
+    public String selectCertCode(String email) {
+        return this.authMapper.selectCertCode(email);
     }
 
     @Override
@@ -91,50 +87,50 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public int createUser(ReqJoinDto dto) {
+    public int createUser(SignupDtos.Request dto) {
         return this.authMapper.createUser(dto);
     }
 
     @Override
-    public ResLoginDto selectUser(String username) {
-        UserInfo userInfo = this.authMapper.selectUser(username);
+    public LoginDtos.Response selectUser(String email) {
+        UserInfo userInfo = this.authMapper.selectUser(email);
         return this.authConverter.INSTANCE.convertLogin(userInfo);
     }
 
     @Override
-    public int updateUserLogin(String username) {
-        return this.authMapper.updateUserLogin(username);
+    public int updateUserLogin(String email) {
+        return this.authMapper.updateUserLogin(email);
     }
 
     @Override
-    public int updateTrial(ReqLoginDto dto) {
+    public int updateTrial(LoginDtos.Request dto) {
         return this.authMapper.updateTrial(dto);
     }
 
     @Override
-    public int updateUserStatus(ReqLoginDto dto) {
+    public int updateUserStatus(LoginDtos.Request dto) {
         return this.authMapper.updateUserStatus(dto);
     }
 
     @Override
-    public int updateUserLogout(String username) {
-        return this.authMapper.updateUserLogout(username);
+    public int updateUserLogout(String email) {
+        return this.authMapper.updateUserLogout(email);
     }
 
     @Override
-    public ResFindIdDto findId(String phone) {
+    public FindDtos.ResponseIdPw findId(String phone) {
         FindIdInfo findIdInfo = this.authMapper.findId(phone);
         return this.authConverter.INSTANCE.convertFindId(findIdInfo);
     }
 
     @Override
-    public ResFindPwDto findPw(ReqFindPwDto dto) {
+    public FindDtos.ResponseIdPw findPw(FindDtos.RequestPw dto) {
         FindPwInfo findPwInfo = this.authMapper.findPw(dto);
         return this.authConverter.INSTANCE.convertFindPw(findPwInfo);
     }
 
     @Override
-    public int modPw(ReqModPwDto dto) {
+    public int modPw(ModifyDtos.RequestPw dto) {
         return this.authMapper.modPw(dto);
     }
 }

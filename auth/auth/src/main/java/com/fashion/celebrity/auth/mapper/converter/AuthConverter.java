@@ -1,9 +1,8 @@
 package com.fashion.celebrity.auth.mapper.converter;
 
+import com.fashion.celebrity.auth.dto.FindDtos;
+import com.fashion.celebrity.auth.dto.LoginDtos;
 import com.fashion.celebrity.auth.dto.UserDto;
-import com.fashion.celebrity.auth.dto.response.ResFindIdDto;
-import com.fashion.celebrity.auth.dto.response.ResFindPwDto;
-import com.fashion.celebrity.auth.dto.response.ResLoginDto;
 import com.fashion.celebrity.auth.model.FindIdInfo;
 import com.fashion.celebrity.auth.model.FindPwInfo;
 import com.fashion.celebrity.auth.model.UserInfo;
@@ -19,14 +18,14 @@ public interface AuthConverter {
     @Mapping(source = "passwd", target="password")
     UserDto convertAuthLogin(UserInfo userInfo);
 
-    @Mapping(source = "userId", target="username")
-    ResLoginDto convertLogin(UserInfo userInfo);
+    @Mapping(source = "userId", target="email")
+    LoginDtos.Response convertLogin(UserInfo userInfo);
 
-    @Mapping(source = "userId", target="username")
+    @Mapping(source = "userId", target="email")
     @Mapping(source = "cnlCd", target="pathCode")
-    ResFindIdDto convertFindId(FindIdInfo findIdInfo);
+    FindDtos.ResponseIdPw convertFindId(FindIdInfo findIdInfo);
 
-    @Mapping(source = "userId", target="username")
+    @Mapping(source = "userId", target="email")
     @Mapping(source = "cnlCd", target="pathCode")
-    ResFindPwDto convertFindPw(FindPwInfo findPwInfo);
+    FindDtos.ResponseIdPw convertFindPw(FindPwInfo findPwInfo);
 }

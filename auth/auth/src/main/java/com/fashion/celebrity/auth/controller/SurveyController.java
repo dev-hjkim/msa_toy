@@ -1,6 +1,6 @@
 package com.fashion.celebrity.auth.controller;
 
-import com.fashion.celebrity.auth.common.model.ApiInfo;
+import com.fashion.celebrity.auth.common.dto.ApiDto;
 import com.fashion.celebrity.auth.dto.request.ReqSurveyDto;
 import com.fashion.celebrity.auth.dto.response.ResBadDto;
 import com.fashion.celebrity.auth.dto.response.ResColorDto;
@@ -35,24 +35,24 @@ public class SurveyController {
     public ResponseEntity<?> GetGoodPointList() {
         logger.info("GetGoodPointList");
 
-        ApiInfo apiInfo = new ApiInfo();
+        ApiDto apiDto = new ApiDto();
 
         List<ResGoodDto> goodList = this.surveyService.selectGoodList();
 
         if (goodList.size() > 0) {
-            apiInfo.setSuccess(true);
-            apiInfo.setCode("SS01");
-            apiInfo.setMessage("성공적으로 조회하었습니다.");
-            apiInfo.setObj(goodList);
+            apiDto.setSuccess(true);
+            apiDto.setCode("SS01");
+            apiDto.setMessage("성공적으로 조회하었습니다.");
+            apiDto.setObj(goodList);
         } else {
-            apiInfo.setSuccess(false);
-            apiInfo.setCode("");
-            apiInfo.setMessage("조회에 오류가 발생하였습니다. 담당자에게 문의해주세요.");
+            apiDto.setSuccess(false);
+            apiDto.setCode("");
+            apiDto.setMessage("조회에 오류가 발생하였습니다. 담당자에게 문의해주세요.");
         }
 
-        logger.info("GetGoodPointList res ::: {}", apiInfo);
+        logger.info("GetGoodPointList res ::: {}", apiDto);
 
-        return new ResponseEntity<Object>(apiInfo, HttpStatus.OK);
+        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
     }
 
     /**
@@ -65,25 +65,25 @@ public class SurveyController {
     public ResponseEntity<?> GetBadPointList() {
         logger.info("GetBadPointList");
 
-        ApiInfo apiInfo = new ApiInfo();
+        ApiDto apiDto = new ApiDto();
 
         List<ResBadDto> badList = this.surveyService.selectBadList();
 
         if (badList.size() > 0) {
-            apiInfo.setSuccess(true);
-            apiInfo.setCode("SS01");
-            apiInfo.setMessage("성공적으로 조회하었습니다.");
-            apiInfo.setObj(badList);
+            apiDto.setSuccess(true);
+            apiDto.setCode("SS01");
+            apiDto.setMessage("성공적으로 조회하었습니다.");
+            apiDto.setObj(badList);
         } else {
-            apiInfo.setSuccess(false);
-            apiInfo.setCode("");
-            apiInfo.setMessage("조회에 오류가 발생하였습니다. 담당자에게 문의해주세요.");
+            apiDto.setSuccess(false);
+            apiDto.setCode("");
+            apiDto.setMessage("조회에 오류가 발생하였습니다. 담당자에게 문의해주세요.");
         }
 
-        logger.info("GetBadPointList res ::: {}", apiInfo);
+        logger.info("GetBadPointList res ::: {}", apiDto);
 
 
-        return new ResponseEntity<Object>(apiInfo, HttpStatus.OK);
+        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
     }
 
     /**
@@ -96,25 +96,25 @@ public class SurveyController {
     public ResponseEntity<?> GetStyleList() {
         logger.info("GetStyleList");
 
-        ApiInfo apiInfo = new ApiInfo();
+        ApiDto apiDto = new ApiDto();
 
         List<ResStyleDto> styleList = this.surveyService.selectStyleList();
 
         if (styleList.size() > 0) {
-            apiInfo.setSuccess(true);
-            apiInfo.setCode("SS01");
-            apiInfo.setMessage("성공적으로 조회하었습니다.");
-            apiInfo.setObj(styleList);
+            apiDto.setSuccess(true);
+            apiDto.setCode("SS01");
+            apiDto.setMessage("성공적으로 조회하었습니다.");
+            apiDto.setObj(styleList);
         } else {
-            apiInfo.setSuccess(false);
-            apiInfo.setCode("");
-            apiInfo.setMessage("조회에 오류가 발생하였습니다. 담당자에게 문의해주세요.");
+            apiDto.setSuccess(false);
+            apiDto.setCode("");
+            apiDto.setMessage("조회에 오류가 발생하였습니다. 담당자에게 문의해주세요.");
         }
 
-        logger.info("GetStyleList res ::: {}", apiInfo);
+        logger.info("GetStyleList res ::: {}", apiDto);
 
 
-        return new ResponseEntity<Object>(apiInfo, HttpStatus.OK);
+        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
     }
 
     /**
@@ -127,25 +127,25 @@ public class SurveyController {
     public ResponseEntity<?> GetColorList() {
         logger.info("GetColorList");
 
-        ApiInfo apiInfo = new ApiInfo();
+        ApiDto apiDto = new ApiDto();
 
         List<ResColorDto> colorList = this.surveyService.selectColorList();
 
         if (colorList.size() > 0) {
-            apiInfo.setSuccess(true);
-            apiInfo.setCode("SS01");
-            apiInfo.setMessage("성공적으로 조회하었습니다.");
-            apiInfo.setObj(colorList);
+            apiDto.setSuccess(true);
+            apiDto.setCode("SS01");
+            apiDto.setMessage("성공적으로 조회하었습니다.");
+            apiDto.setObj(colorList);
         } else {
-            apiInfo.setSuccess(false);
-            apiInfo.setCode("");
-            apiInfo.setMessage("조회에 오류가 발생하였습니다. 담당자에게 문의해주세요.");
+            apiDto.setSuccess(false);
+            apiDto.setCode("");
+            apiDto.setMessage("조회에 오류가 발생하였습니다. 담당자에게 문의해주세요.");
         }
 
-        logger.info("GetColorList res ::: {}", apiInfo);
+        logger.info("GetColorList res ::: {}", apiDto);
 
 
-        return new ResponseEntity<Object>(apiInfo, HttpStatus.OK);
+        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
     }
 
 
@@ -175,24 +175,24 @@ public class SurveyController {
     public ResponseEntity<?> Regist(@RequestBody ReqSurveyDto dto) {
         logger.info("Regist {}", dto);
 
-        ApiInfo apiInfo = new ApiInfo();
+        ApiDto apiDto = new ApiDto();
 
         try {
             this.surveyService.createSurveyAnswer(dto);
 
-            apiInfo.setSuccess(true);
-            apiInfo.setCode("CS01");
-            apiInfo.setMessage("성공적으로 등록되었습니다.");
+            apiDto.setSuccess(true);
+            apiDto.setCode("CS01");
+            apiDto.setMessage("성공적으로 등록되었습니다.");
         } catch (Exception ex) {
             logger.info("{}", ex.getMessage());
-            apiInfo.setSuccess(false);
-            apiInfo.setCode("CE99");
-            apiInfo.setMessage("등록 중 오류가 발생했습니다. 담당자에게 문의해주세요.");
+            apiDto.setSuccess(false);
+            apiDto.setCode("CE99");
+            apiDto.setMessage("등록 중 오류가 발생했습니다. 담당자에게 문의해주세요.");
         }
 
-        logger.info("Regist res ::: {}", apiInfo);
+        logger.info("Regist res ::: {}", apiDto);
 
 
-        return new ResponseEntity<Object>(apiInfo, HttpStatus.OK);
+        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
     }
 }

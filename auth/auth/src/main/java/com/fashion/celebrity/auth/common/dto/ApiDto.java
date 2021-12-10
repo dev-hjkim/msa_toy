@@ -1,11 +1,11 @@
-package com.fashion.celebrity.auth.common.model;
+package com.fashion.celebrity.auth.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ApiInfo {
+public class ApiDto {
     private boolean Success;
     private String code;
     private String message;

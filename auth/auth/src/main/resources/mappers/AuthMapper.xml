@@ -8,29 +8,29 @@
         WHERE user_id = #{username}
     </select>
 
-    <select id="selectDupMail" parameterType="com.fashion.celebrity.auth.dto.request.ReqDupMailDto" resultType="com.fashion.celebrity.auth.model.DupUserInfo">
+    <select id="selectDupMail" parameterType="com.fashion.celebrity.auth.dto.ValidateDtos$RequestEmail" resultType="com.fashion.celebrity.auth.model.DupUserInfo">
         SELECT user_id
         FROM tb_user
-        WHERE user_id = #{username}
+        WHERE user_id = #{email}
     </select>
 
-    <update id="createMail" parameterType="String">
+    <update id="createEmail" parameterType="String">
         INSERT INTO tb_user
         (user_id, status, cnl_cd, temp_dtm)
         VALUES
-        (#{username}, '3', '01', now())
+        (#{email}, '3', '01', now())
     </update>
 
-    <update id="updateCertCode" parameterType="com.fashion.celebrity.auth.dto.request.ReqCertMailDto">
+    <update id="updateCertCode" parameterType="com.fashion.celebrity.auth.dto.ValidateDtos$RequestEmail">
         UPDATE tb_user
         SET cert_num = #{certCode}
-        WHERE user_id = #{username}
+        WHERE user_id = #{email}
     </update>
 
     <select id="selectCertCode" parameterType="String" resultType="String">
         SELECT cert_num
         FROM tb_user
-        WHERE user_id = #{username}
+        WHERE user_id = #{email}
     </select>
 
     <select id="selectNickname" parameterType="String" resultType="com.fashion.celebrity.auth.model.DupUserInfo">
@@ -39,17 +39,17 @@
         WHERE nickname = #{nickname}
     </select>
 
-    <update id="createUser" parameterType="com.fashion.celebrity.auth.dto.request.ReqJoinDto">
+    <update id="createUser" parameterType="com.fashion.celebrity.auth.dto.SignupDtos$Request">
         INSERT INTO tb_user
         (user_id, status, passwd, nickname, mobile, sex, birth_dt, cnl_cd, mkt_yn, pw_mod_dtm, reg_dtm)
         VALUES
-        (#{username}, '0', #{password}, #{nickname}, #{phone}, #{gender}, #{birthday}, #{pathCode}, #{mktYn}, now(), now())
+        (#{email}, '0', #{password}, #{nickname}, #{phone}, #{gender}, #{birthDate}, #{pathCode}, #{marketingYn}, now(), now())
     </update>
 
     <select id="selectUser" parameterType="String" resultType="com.fashion.celebrity.auth.model.UserInfo">
         SELECT user_id, status
         FROM tb_user
-        WHERE user_id = #{username}
+        WHERE user_id = #{email}
     </select>
 
     <update id="updateUserLogin" parameterType="String">
@@ -57,30 +57,30 @@
         SET login_cnt = 0
         , login_cnl = '01'
         , login_dtm = now()
-        WHERE user_id = #{username}
+        WHERE user_id = #{email}
     </update>
 
-    <update id="updateTrial" parameterType="com.fashion.celebrity.auth.dto.request.ReqLoginDto">
+    <update id="updateTrial" parameterType="com.fashion.celebrity.auth.dto.LoginDtos$Request">
         UPDATE tb_user
         SET login_cnt = login_cnt + 1
-        WHERE user_id = #{username}
-        <selectKey keyProperty="count" resultType="Integer" order="AFTER">
+        WHERE user_id = #{email}
+        <selectKey keyProperty="count" resultType="int" order="AFTER">
             SELECT login_cnt as count
             FROM tb_user
-            WHERE user_id = #{username}
+            WHERE user_id = #{email}
         </selectKey>
     </update>
 
-    <update id="updateUserStatus" parameterType="com.fashion.celebrity.auth.dto.request.ReqLoginDto">
+    <update id="updateUserStatus" parameterType="com.fashion.celebrity.auth.dto.LoginDtos$Request">
         UPDATE tb_user
         SET status = #{status}
-        WHERE user_id = #{username}
+        WHERE user_id = #{email}
     </update>
 
     <update id="updateUserLogout" parameterType="String">
         UPDATE tb_user
         SET logout_dtm = now()
-        WHERE user_id = #{username}
+        WHERE user_id = #{email}
     </update>
 
     <select id="findId" parameterType="String" resultType="com.fashion.celebrity.auth.model.FindIdInfo">
@@ -89,19 +89,19 @@
         WHERE mobile = #{phone}
     </select>
 
-    <select id="findPw" parameterType="com.fashion.celebrity.auth.dto.request.ReqFindPwDto" resultType="com.fashion.celebrity.auth.model.FindPwInfo">
+    <select id="findPw" parameterType="com.fashion.celebrity.auth.dto.FindDtos$RequestPw" resultType="com.fashion.celebrity.auth.model.FindPwInfo">
         SELECT user_id, cnl_cd
         FROM tb_user
-        WHERE user_id = #{username}
+        WHERE user_id = #{email}
         AND mobile = #{phone}
     </select>
 
-    <update id="modPw" parameterType="com.fashion.celebrity.auth.dto.request.ReqModPwDto">
+    <update id="modPw" parameterType="com.fashion.celebrity.auth.dto.ModifyDtos$RequestPw">
         UPDATE tb_user
         SET passwd = #{password}
         , pw_mod_dtm = now()
         , mod_dtm = now()
-        WHERE user_id = #{username}
+        WHERE user_id = #{email}
     </update>
 
 </mapper>

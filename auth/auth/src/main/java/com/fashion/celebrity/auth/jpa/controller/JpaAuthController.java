@@ -1,6 +1,6 @@
 package com.fashion.celebrity.auth.jpa.controller;
 
-import com.fashion.celebrity.auth.common.model.ApiInfo;
+import com.fashion.celebrity.auth.common.dto.ApiDto;
 import com.fashion.celebrity.auth.jpa.controller.dto.ValidateMailRequestDto;
 import com.fashion.celebrity.auth.jpa.service.JpaAuthService;
 import lombok.RequiredArgsConstructor;
@@ -17,22 +17,22 @@ public class JpaAuthController {
 
     @PostMapping("/jpa/validate/mail")
     public ResponseEntity<Object> validateMail(@RequestBody ValidateMailRequestDto requestDto) {
-        ApiInfo apiInfo = new ApiInfo();
+        ApiDto apiDto = new ApiDto();
         String status = jpaAuthService.validateMail(requestDto);
 
         if (status.equals("01")) {
-            apiInfo.setSuccess(true);
-            apiInfo.setCode("");
-            apiInfo.setMessage("인증번호를 발송하였습니다.");
+            apiDto.setSuccess(true);
+            apiDto.setCode("");
+            apiDto.setMessage("인증번호를 발송하였습니다.");
         } else if (status.equals("02")) {
-            apiInfo.setSuccess(false);
-            apiInfo.setCode("");
-            apiInfo.setMessage("인증번호 발송에 실패하였습니다. 담당자에게 문의해주세요.");
+            apiDto.setSuccess(false);
+            apiDto.setCode("");
+            apiDto.setMessage("인증번호 발송에 실패하였습니다. 담당자에게 문의해주세요.");
         } else {
-            apiInfo.setSuccess(false);
-            apiInfo.setCode("");
-            apiInfo.setMessage("이미 존재하는 아이디입니다.");
+            apiDto.setSuccess(false);
+            apiDto.setCode("");
+            apiDto.setMessage("이미 존재하는 아이디입니다.");
         }
-        return new ResponseEntity<>(apiInfo, HttpStatus.OK);
+        return new ResponseEntity<>(apiDto, HttpStatus.OK);
     }
 }

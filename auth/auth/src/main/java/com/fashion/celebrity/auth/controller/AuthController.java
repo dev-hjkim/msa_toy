@@ -1,11 +1,10 @@
 package com.fashion.celebrity.auth.controller;
 
-import com.fashion.celebrity.auth.common.model.ApiInfo;
+import com.fashion.celebrity.auth.common.dto.ApiDto;
+import com.fashion.celebrity.auth.common.dto.AuthResCode;
 import com.fashion.celebrity.auth.common.security.JwtTokenProvider;
+import com.fashion.celebrity.auth.dto.*;
 import com.fashion.celebrity.auth.dto.request.*;
-import com.fashion.celebrity.auth.dto.response.ResFindIdDto;
-import com.fashion.celebrity.auth.dto.response.ResFindPwDto;
-import com.fashion.celebrity.auth.dto.response.ResLoginDto;
 import com.fashion.celebrity.auth.model.DupUserInfo;
 import com.fashion.celebrity.auth.service.AuthService;
 import org.slf4j.Logger;
@@ -19,12 +18,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -42,455 +40,719 @@ public class AuthController {
 
 
     /**
-     * request: username
-     * response: apiInfo
-     * desc: 이메일 유효성 체크 및 인증번호 전송
+     * @api {get} /v1/auth/validate/email 01.ValidateEmail
+     * @apiName ValidateEmail
+     * @apiGroup Auth
+     * @apiDescription 이메일 유효성 체크 및 인증번호 전송
+     * 
+     * @apiParam {String} email 이메일 아이디
+     * 
+     * @apiSuccess {String} success API 성공 여부
+     * @apiSuccess {String} code API 응답 코드
+     * @apiSuccess {String} message API 응답 메시지
      *
-     {
-     "username": "guswlsapdlf@naver.com"
-     }
+     * @apiParamExample {json} Request-Example:
+     *      {
+     *          "email": "guswlsapdlf@naver.com"
+     *      }
+     *
+     * @apiSuccessExample {json} Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": true,
+     *          "code": "AU007",
+     *          "message": "인증번호를 발송하였습니다."
+     *      }
+     * @apiSuccessExample {json} False-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": false,
+     *          "code": "AU006",
+     *          "message": "이미 존재하는 아이디입니다."
+     *      }
+     * @apiSuccessExample {json} False-Response2:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": false,
+     *          "code": "AU008",
+     *          "message": "인증번호 발송에 실패하였습니다."
+     *      }
      */
-    @CrossOrigin
-    @PostMapping(value="/validate/mail")
-    public ResponseEntity<?> ValidateMail(@RequestBody ReqDupMailDto dto) {
-        logger.info("ValidateMail {}", dto);
+    @GetMapping(value="/validate/email")
+    public ResponseEntity<?> ValidateEmail(@Valid ValidateDtos.RequestEmail dto) {
+        logger.info("ValidateEmail {}", dto);
 
-        ApiInfo apiInfo = new ApiInfo();
+        ApiDto apiDto = new ApiDto();
 
         DupUserInfo user = this.authService.selectDupMail(dto);
 
+        // 중복된 이메일 존재하는 경우
         if (user != null) {
-            apiInfo.setSuccess(false);
-            apiInfo.setCode("SE03");
-            apiInfo.setMessage("이미 존재하는 아이디입니다.");
+            apiDto.setSuccess(false);
+            apiDto.setCode(AuthResCode.AU006.name());
+            apiDto.setMessage(AuthResCode.AU006.getMessage());
         } else {
             try {
-                this.authService.createMail(dto.getUsername());
+                this.authService.createEmail(dto.getEmail());
 
                 boolean sent;
                 sent = this.authService.sendEmail(dto);
 
                 if (sent) {
-                    apiInfo.setSuccess(true);
-                    apiInfo.setCode("SS03");
-                    apiInfo.setMessage("인증번호를 발송하였습니다.");
+                    apiDto.setSuccess(true);
+                    apiDto.setCode(AuthResCode.AU007.name());
+                    apiDto.setMessage(AuthResCode.AU007.getMessage());
                 } else {
-                    apiInfo.setSuccess(false);
-                    apiInfo.setCode("SE04");
-                    apiInfo.setMessage("인증번호 발송에 실패하였습니다. 담당자에게 문의해주세요.");
+                    apiDto.setSuccess(false);
+                    apiDto.setCode(AuthResCode.AU008.name());
+                    apiDto.setMessage(AuthResCode.AU008.getMessage());
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                apiInfo.setSuccess(false);
-                apiInfo.setCode("SE04");
-                apiInfo.setMessage("인증번호 발송에 실패하였습니다. 담당자에게 문의해주세요.");
+                apiDto.setSuccess(false);
+                apiDto.setCode(AuthResCode.AU008.name());
+                apiDto.setMessage(AuthResCode.AU008.getMessage());
             }
         }
 
-        logger.info("ValidateMail res ::: {}", apiInfo);
+        logger.info("ValidateEmail res ::: {}", apiDto);
 
-        return new ResponseEntity<Object>(apiInfo, HttpStatus.OK);
+        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
     }
 
     /**
-     * request: username, certCode
-     * response: apiInfo
-     * desc: 이메일 인증하기
+     * @api {post} /v1/auth/validate/check/email 02.ValidateCheckEmail
+     * @apiName ValidateCheckEmail
+     * @apiGroup Auth
+     * @apiDescription 이메일 인증하기
      *
-     {
-     "username": "guswlsapdlf@naver.com",
-     "certCode": "PRc2Cq8I04"
-     }
+     * @apiParam {String} email 이메일 아이디
+     * @apiParam {String} certCode 인증번호 10자리
+     *
+     * @apiSuccess {String} success API 성공 여부
+     * @apiSuccess {String} code API 응답 코드
+     * @apiSuccess {String} message API 응답 메시지
+     *
+     * @apiParamExample {json} Request-Example:
+     *      {
+     *          "email": "guswlsapdlf@naver.com",
+     *          "certCode": "PRc2Cq8I04"
+     *      }
+     *
+     * @apiSuccessExample {json} Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": true,
+     *          "code": "AU009",
+     *          "message": "이메일 인증에 성공하였습니다."
+     *      }
+     * @apiSuccessExample {json} False-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": false,
+     *          "code": "AU010",
+     *          "message": "이메일 인증에 실패하였습니다."
+     *      }
      */
-    @CrossOrigin
-    @PostMapping(value="/validate/mail/cert")
-    public ResponseEntity<?> ValidateMailCheck(@RequestBody ReqCertMailDto dto) {
-        logger.info("ValidateMailCheck {}", dto);
+    @PostMapping(value="/validate/check/email")
+    public ResponseEntity<?> ValidateCheckEmail(@Valid @RequestBody ValidateCheckDtos.RequestEmail dto) {
+        logger.info("ValidateCheckEmail {}", dto);
 
-        ApiInfo apiInfo = new ApiInfo();
+        ApiDto apiDto = new ApiDto();
 
-        String certNum = this.authService.selectCertCode(dto.getUsername());
+        String certNum = this.authService.selectCertCode(dto.getEmail());
 
         if (certNum.equals(dto.getCertCode())) {
-            apiInfo.setSuccess(true);
-            apiInfo.setCode("SS04");
-            apiInfo.setMessage("이메일 인증에 성공하였습니다.");
+            apiDto.setSuccess(true);
+            apiDto.setCode(AuthResCode.AU009.name());
+            apiDto.setMessage(AuthResCode.AU009.getMessage());
         } else {
-            apiInfo.setSuccess(false);
-            apiInfo.setCode("SE05");
-            apiInfo.setMessage("이메일 인증에 실패하였습니다.");
+            apiDto.setSuccess(false);
+            apiDto.setCode(AuthResCode.AU010.name());
+            apiDto.setMessage(AuthResCode.AU010.getMessage());
         }
 
-        logger.info("ValidateMailCheck res ::: {}", apiInfo);
+        logger.info("ValidateCheckEmail res ::: {}", apiDto);
 
-        return new ResponseEntity<Object>(apiInfo, HttpStatus.OK);
+        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
     }
 
     /**
-     * request: nickname
-     * response: apiInfo
-     * desc: 닉네임 중복체크
+     * @api {get} /v1/auth/validate/nickname 03.ValidateNickname
+     * @apiName ValidateNickname
+     * @apiGroup Auth
+     * @apiDescription 닉네임 중복체크
      *
-     {
-     "nickname": "딸기"
-     }
+     * @apiParam {String} nickname 별명
+     *
+     * @apiSuccess {String} success API 성공 여부
+     * @apiSuccess {String} code API 응답 코드
+     * @apiSuccess {String} message API 응답 메시지
+     *
+     * @apiParamExample {json} Request-Example:
+     *      {
+     *          "nickname": "딸기"
+     *      }
+     *
+     * @apiSuccessExample {json} Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": true,
+     *          "code": "AU012",
+     *          "message": "사용 가능한 닉네임입니다."
+     *      }
+     * @apiSuccessExample {json} False-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": false,
+     *          "code": "AU011",
+     *          "message": "이미 존재하는 닉네임입니다."
+     *      }
+     *
      */
-    @CrossOrigin
-    @PostMapping(value="/validate/nickname")
-    public ResponseEntity<?> ValidateNickname(@RequestBody ReqDupNickDto dto) {
+    @GetMapping(value="/validate/nickname")
+    public ResponseEntity<?> ValidateNickname(@Valid ValidateDtos.RequestNickname dto) {
         logger.info("ValidateNickname {}", dto);
 
-        ApiInfo apiInfo = new ApiInfo();
+        ApiDto apiDto = new ApiDto();
 
         DupUserInfo user = this.authService.selectNickname(dto.getNickname());
 
         if (user != null) {
-            apiInfo.setSuccess(false);
-            apiInfo.setCode("SE06");
-            apiInfo.setMessage("이미 존재하는 닉네임입니다.");
+            apiDto.setSuccess(false);
+            apiDto.setCode(AuthResCode.AU011.name());
+            apiDto.setMessage(AuthResCode.AU011.getMessage());
         } else {
-            apiInfo.setSuccess(true);
-            apiInfo.setCode("SS06");
-            apiInfo.setMessage("사용 가능한 닉네임입니다.");
+            apiDto.setSuccess(true);
+            apiDto.setCode(AuthResCode.AU012.name());
+            apiDto.setMessage(AuthResCode.AU012.getMessage());
         }
 
-        logger.info("ValidateNickname res ::: {}", apiInfo);
+        logger.info("ValidateNickname res ::: {}", apiDto);
 
-        return new ResponseEntity<Object>(apiInfo, HttpStatus.OK);
+        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
     }
 
 
     /**
-     * request: username, password, nickname, phone, gender, birthDt, mktYn, pathCode
-     * response: apiInfo(obj: userId, channelCd)
-     * desc: 회원가입
+     * @api {post} /v1/auth/signup 04.Signup
+     * @apiName Signup
+     * @apiGroup Auth
+     * @apiDescription 회원가입
      *
+     * @apiParam {String} email 이메일 아이디
+     * @apiParma {String} password 비밀번호
+     * @apiParam {String} nickname 별명
+     * @apiParam {String} phone 핸드폰 번호('-' 제외)
+     * @apiParam {String} gender 성별(0: 남성 / 1: 여성)
+     * @apiParam {String} birthDate 생년월일(YYYYMMDD)
+     * @apiParam {String} mktYn 마케팅 수신 동의 여부
+     * @apiParam {String} pathCode 가입경로 코드(01: 이메일 로그인, 현재는 01만 존재)
      *
-     {
-     "username": "guswlsapdlf@naver.com",
-     "password": "asdf",
-     "nickname": "딸기",
-     "phone": "01066331834",
-     "gender": "02",
-     "birthday": "20000101",
-     "mktYn": "N",
-     "pathCode": "01"
-     }
+     * @apiSuccess {String} success API 성공 여부
+     * @apiSuccess {String} code API 응답 코드
+     * @apiSuccess {String} message API 응답 메시지
+     *
+     * @apiParamExample {json} Request-Example:
+     *      {
+     *          "email": "guswlsapdlf@naver.com",
+     *          "password": "asdf",
+     *          "nickname": "딸기",
+     *          "phone": "01012341234",
+     *          "gender": "1",
+     *          "birthday": "20220101",
+     *          "marketingYn": "N",
+     *          "pathCode": "01"
+     *      }
+     *
+     * @apiSuccessExample {json} Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": true,
+     *          "code": "AU001",
+     *          "message": "성공적으로 등록되었습니다."
+     *      }
+     * @apiSuccessExample {json} False-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": false,
+     *          "code": "",
+     *          "message": ""
+     *      }
      */
-    @CrossOrigin
-    @PostMapping(value="/regist")
-    public ResponseEntity<?> Regist(@RequestBody ReqJoinDto dto) {
-        logger.info("Regist {}", dto);
+    @PostMapping(value="/signup")
+    public ResponseEntity<?> Signup(@Valid @RequestBody SignupDtos.Request dto) {
+        logger.info("Signup {}", dto);
 
-        ApiInfo apiInfo = new ApiInfo();
+        ApiDto apiDto = new ApiDto();
 
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         try {
             this.authService.createUser(dto);
 
-            apiInfo.setSuccess(true);
-            apiInfo.setCode("CS01");
-            apiInfo.setMessage("성공적으로 등록되었습니다.");
+            apiDto.setSuccess(true);
+            apiDto.setCode(AuthResCode.AU001.name());
+            apiDto.setMessage(AuthResCode.AU001.getMessage());
         } catch (Exception ex) {
             ex.printStackTrace();
-            apiInfo.setSuccess(false);
-            apiInfo.setCode("CE99");
-            apiInfo.setMessage("등록 중 오류가 발생했습니다. 담당자에게 문의해주세요.");
+            apiDto.setSuccess(false);
+            apiDto.setCode("CE99");
+            apiDto.setMessage("등록 중 오류가 발생했습니다. 담당자에게 문의해주세요.");
         }
 
-        logger.info("Regist res ::: {}", apiInfo);
+        logger.info("Signup res ::: {}", apiDto);
 
 
-        return new ResponseEntity<Object>(apiInfo, HttpStatus.OK);
+        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
     }
 
 
+
     /**
-     * request: username, password
-     * response: apiInfo
-     *      (obj: username, status, accessToken, refreshToken, count)
-     * desc: 로그인
+     * @api {post} /v1/auth/login 05.Login
+     * @apiName Login
+     * @apiGroup Auth
+     * @apiDescription 로그인
      *
-     {
-     "username": "guswlsapdlf@naver.com",
-     "password": "asdf"
-     }
+     * @apiParam {String} email 이메일 아이디
+     * @apiParma {String} password 비밀번호
+     *
+     * @apiSuccess {String} success API 성공 여부
+     * @apiSuccess {String} code API 응답 코드
+     * @apiSuccess {String} message API 응답 메시지
+     * @apiSuccess {Object} obj 유저 정보를 담은 객체
+     * @apiSuccess {String} obj.email 이메일 아이디
+     * @apiSuccess {String} obj.status 유저 상태코드
+     * @apiSuccess {String} obj.accessToken access token
+     * @apiSuccess {String} obj.refreshToken refresh token
+     * @apiSuccess {String} obj.count 비밀번호 오류 횟수
+     *
+     * @apiParamExample {json} Request-Example:
+     *      {
+     *          "email": "guswlsapdlf@naver.com",
+     *          "password": "asdf"
+     *      }
+     *
+     * @apiSuccessExample {json} Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": true,
+     *          "code": "AU013",
+     *          "message": "로그인에 성공하였습니다.",
+     *          "obj": {
+     *              "email": "guswlsapdlf@naver.com",
+     *              "status": "0",
+     *              "accessToken": (access token),
+     *              "refreshToken": (refresh token)
+     *          }
+     *      }
+     * @apiSuccessExample {json} False-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": false,
+     *          "code": "AU014",
+     *          "message": "아이디 또는 비밀번호가 일치하지 않습니다."
+     *      }
+     * @apiSuccessExample {json} False-Response2:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": false,
+     *          "code": "AU015",
+     *          "message": "가입을 완료해주세요."
+     *      }
+     * @apiSuccessExample {json} False-Response3:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": false,
+     *          "code": "AU016",
+     *          "message": "잠금되었거나 중지된 계정입니다."
+     *      }
+     * @apiSuccessExample {json} False-Response4:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": false,
+     *          "code": "AU017",
+     *          "message": "로그인 5회 이상 오류로 계정이 잠금되었습니다."
+     *      }
      */
-    @CrossOrigin
     @PostMapping(value="/login")
-    public ResponseEntity<?> Login(@RequestBody ReqLoginDto dto) {
+    public ResponseEntity<?> Login(@Valid @RequestBody LoginDtos.Request dto) {
         logger.info("Login {}", dto);
 
-        ApiInfo apiInfo = new ApiInfo();
+        ApiDto apiDto = new ApiDto();
 
-        // 접속자의 ip 주소
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        String ip = request.getRemoteAddr();
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth.getPrincipal().equals("anonymousUser")) {
-            try {
-                Authentication authentication = authenticationManager.authenticate(
-                        new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+            LoginDtos.Response user = this.authService.selectUser(dto.getEmail());
 
-                ResLoginDto user = this.authService.selectUser(dto.getUsername());
+            if (!user.getStatus().equals("0")) {
+                // 삭제 계정인지 체크
+                if (user.getStatus().equals("4")) {
+                    logger.info("login ::: failed, deleted user, email {}", user.getEmail());
 
-                if (!user.getStatus().equals("0")) {
-                    // 삭제 계정인지 체크
-                    if (user.getStatus().equals("4")) {
-                        logger.info("login ::: failed, deleted user, username {}, ip {}", user.getUsername(), ip);
+                    apiDto.setSuccess(false);
+                    apiDto.setCode(AuthResCode.AU014.name());
+                    apiDto.setMessage(AuthResCode.AU014.getMessage());
+                } else if(user.getStatus().equals("3")) {
+                    logger.info("login ::: failed, temp user, email {}", user.getEmail());
 
-                        apiInfo.setSuccess(false);
-                        apiInfo.setCode("LE01");
-                        apiInfo.setMessage("아이디 또는 비밀번호가 일치하지 않습니다.");
-                    } else if(user.getStatus().equals("3")) {
-                        logger.info("login ::: failed, temp user, username {}, ip {}", user.getUsername(), ip);
-
-                        apiInfo.setSuccess(false);
-                        apiInfo.setCode("LE02");
-                        apiInfo.setMessage("가입을 완료해주세요.");
-
-                    } else {
-                        logger.info("login ::: failed, locked user, username {}, ip {}", user.getUsername(), ip);
-
-                        apiInfo.setSuccess(false);
-                        apiInfo.setCode("LE03");
-                        apiInfo.setMessage("잠금되었거나 중지된 계정입니다. 담당자에게 문의해주세요.");
-                    }
+                    apiDto.setSuccess(false);
+                    apiDto.setCode(AuthResCode.AU015.name());
+                    apiDto.setMessage(AuthResCode.AU015.getMessage());
                 } else {
-                    // 정상 로그인 성공
-                    logger.info("login ::: success, username {}, ip {}", dto.getUsername(), ip);
+                    logger.info("login ::: failed, locked user, email {}", user.getEmail());
 
-                    this.authService.updateUserLogin(dto.getUsername());
-
-                    String access = tokenProvider.generateToken(authentication, "ACCESS");
-                    String refresh = tokenProvider.generateToken(authentication, "REFRESH");
-
-                    user.setAccessToken(access);
-                    user.setRefreshToken(refresh);
-                    apiInfo.setObj(user);
-
-                    if (dto.getUsername().equals(dto.getPassword())) {
-                        apiInfo.setSuccess(true);
-                        apiInfo.setMessage("LS02");
-                        apiInfo.setMessage("비밀번호 변경이 필요합니다.");
-                    } else {
-                        apiInfo.setSuccess(true);
-                        apiInfo.setCode("LS01");
-                        apiInfo.setMessage("로그인에 성공하였습니다.");
-                    }
+                    apiDto.setSuccess(false);
+                    apiDto.setCode(AuthResCode.AU016.name());
+                    apiDto.setMessage(AuthResCode.AU016.getMessage());
                 }
-            } catch (Exception ex) {
-                logger.error("ex {}", ex.getMessage());
-                try {
-                    this.authService.updateTrial(dto);
+            } else {
+                // 정상 로그인 성공
+                logger.info("login ::: success, email {}", dto.getEmail());
 
-                    logger.info("login ::: failed, username {}, ip {}, (trial {})", dto.getUsername(), ip, dto.getCount());
+                this.authService.updateUserLogin(dto.getEmail());
 
-                    if (dto.getCount() >= 5) {
-                        dto.setStatus("1");
-                        this.authService.updateUserStatus(dto);
+                String access = tokenProvider.generateToken(authentication, "ACCESS");
+                String refresh = tokenProvider.generateToken(authentication, "REFRESH");
 
-                        apiInfo.setSuccess(false);
-                        apiInfo.setCode("LE04");
-                        apiInfo.setMessage("로그인 5회 이상 오류로 계정이 잠금되었습니다.");
-                    } else {
-                        apiInfo.setSuccess(false);
-                        apiInfo.setCode("LE01");
-                        apiInfo.setMessage("아이디 또는 비밀번호가 일치하지 않습니다. (" + dto.getCount() + "회 실패)");
-                    }
-                } catch (Exception ex2) {
-                    logger.error("ex2 {}", ex2.getMessage());
-                    logger.info("login ::: failed, typed username is not in db, ip {}", ip);
+                user.setAccessToken(access);
+                user.setRefreshToken(refresh);
+                apiDto.setObj(user);
 
-                    apiInfo.setSuccess(false);
-                    apiInfo.setCode("LE01");
-                    apiInfo.setMessage("아이디 또는 비밀번호가 일치하지 않습니다.");
-                }
+                apiDto.setSuccess(true);
+                apiDto.setCode(AuthResCode.AU013.name());
+                apiDto.setMessage(AuthResCode.AU013.getMessage());
             }
-        } else {
-            // 세션
-            ResLoginDto user = this.authService.selectUser(dto.getUsername());
-            apiInfo.setObj(user);
+        } catch (Exception ex) {
+            logger.error("ex {}", ex.getMessage());
+            try {
+                this.authService.updateTrial(dto);
+
+                logger.info("login ::: failed, email {} (trial {})", dto.getEmail(), dto.getCount());
+
+                if (dto.getCount() >= 5) {
+                    dto.setStatus("1");
+                    this.authService.updateUserStatus(dto);
+
+                    apiDto.setSuccess(false);
+                    apiDto.setCode(AuthResCode.AU017.name());
+                    apiDto.setMessage(AuthResCode.AU017.getMessage());
+                } else {
+                    apiDto.setSuccess(false);
+                    apiDto.setCode(AuthResCode.AU014.name());
+                    apiDto.setMessage(AuthResCode.AU014.getMessage() + " (" + dto.getCount() + "회 실패)");
+                }
+            } catch (Exception ex2) {
+                logger.error("ex2 {}", ex2.getMessage());
+                logger.info("login ::: failed, typed email is not in db");
+
+                apiDto.setSuccess(false);
+                apiDto.setCode(AuthResCode.AU014.name());
+                apiDto.setMessage(AuthResCode.AU014.getMessage());
+            }
         }
 
-        logger.info("Login res ::: {}", apiInfo);
+        logger.info("Login res ::: {}", apiDto);
 
-        return new ResponseEntity<Object>(apiInfo, HttpStatus.OK);
+        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
     }
 
+
     /**
-     * request: username
-     * response: null
-     * desc: 로그아웃
+     * @api {get} /v1/auth/logout 06.Logout
+     * @apiName Logout
+     * @apiGroup Auth
+     * @apiDescription 로그아웃
      *
-     {
-     "username": "guswlsapdlf@naver.com"
-     }
+     * @apiParam {String} email 이메일 아이디
+     *
+     *
+     * @apiParamExample {json} Request-Example:
+     *      {
+     *          "email": "guswlsapdlf@naver.com"
+     *      }
+     *
      */
+    @GetMapping(value="/logout")
+    public ResponseEntity<?> Logout(@Valid LogoutDtos.Request dto) {
+        logger.info("Logout {}", dto);
 
-    @CrossOrigin
-    @PostMapping(value="/logout")
-    public ResponseEntity<?> Logout(@RequestBody String username) {
-        logger.info("Logout {}", username);
+        logger.info("logout ::: email {}", dto.getEmail());
 
-        // 접속자의 ip 주소
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        String ip = request.getRemoteAddr();
-
-        logger.info("logout ::: username {}, ip {}", username, ip);
-
-        this.authService.updateUserLogout(username);
+        this.authService.updateUserLogout(dto.getEmail());
 
         return ResponseEntity.ok(null);
     }
 
+
+
     /**
-     * request: phone
-     * response: apiInfo(obj: username, pathCode)
-     * desc: 아이디 찾기
+     * @api {post} /v1/auth/find/id 07.FindId
+     * @apiName FindId
+     * @apiGroup Auth
+     * @apiDescription 아이디 찾기
      *
-     {
-     "phone": "01066331834"
-     }
+     * @apiParam {String} phone 핸드폰 번호('-' 제외)
+     *
+     * @apiSuccess {String} success API 성공 여부
+     * @apiSuccess {String} code API 응답 코드
+     * @apiSuccess {String} message API 응답 메시지
+     * @apiSuccess {String} obj 유저 정보를 담은 객체
+     * @apiSuccess {String} obj.email 이메일 아이디
+     * @apiSuccess {String} obj.pathCode 가입경로 코드(01: 이메일 로그인, 현재는 01만 존재)
+     *
+     * @apiParamExample {json} Request-Example:
+     *      {
+     *          "phone": "01012341234"
+     *      }
+     *
+     * @apiSuccessExample {json} Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": true,
+     *          "code": "AU002",
+     *          "message": "성공적으로 조회되었습니다.",
+     *          "obj": {
+     *              "email": "guswlsapdlf@naver.com",
+     *              "pathCode": "01"
+     *          }
+     *      }
+     * @apiSuccessExample {json} False-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": false,
+     *          "code": "AU005",
+     *          "message": "조회 결과가 없습니다."
+     *      }
+     *
      */
-    @CrossOrigin
     @PostMapping(value="/find/id")
-    public ResponseEntity<?> FindId(@RequestBody ReqFindIdDto dto) {
+    public ResponseEntity<?> FindId(@Valid @RequestBody FindDtos.RequestId dto) {
         logger.info("FindId {}", dto);
 
-        ApiInfo apiInfo = new ApiInfo();
+        ApiDto apiDto = new ApiDto();
 
-        ResFindIdDto user = this.authService.findId(dto.getPhone());
+        FindDtos.ResponseIdPw user = this.authService.findId(dto.getPhone());
 
         if (user != null) {
-            apiInfo.setSuccess(true);
-            apiInfo.setCode("SS01");
-            apiInfo.setMessage("조회에 성공하였습니다.");
-            apiInfo.setObj(user);
+            apiDto.setSuccess(true);
+            apiDto.setCode(AuthResCode.AU002.name());
+            apiDto.setMessage(AuthResCode.AU002.getMessage());
+            apiDto.setObj(user);
         } else {
-            apiInfo.setSuccess(false);
-            apiInfo.setCode("SE02");
-            apiInfo.setMessage("가입 정보가 존재하지 않습니다.");
+            apiDto.setSuccess(false);
+            apiDto.setCode(AuthResCode.AU005.name());
+            apiDto.setMessage(AuthResCode.AU005.getMessage());
         }
 
-        logger.info("FindId res ::: {}", apiInfo);
+        logger.info("FindId res ::: {}", apiDto);
 
-        return new ResponseEntity<Object>(apiInfo, HttpStatus.OK);
+        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
     }
 
 
+
     /**
-     * request: username, phone
-     * response: apiInfo
-     * desc: 비밀번호 찾기
+     * @api {post} /v1/auth/find/password 08.FindPw
+     * @apiName FindPw
+     * @apiGroup Auth
+     * @apiDescription 비밀번호 찾기
      *
-     {
-     "username": "guswlsapdlf@naver.com",
-     "phone": "01066331834"
-     }
+     * @apiParam {String} email 이메일 아이디
+     * @apiParam {String} phone 핸드폰 번호('-' 제외)
+     *
+     * @apiSuccess {String} success API 성공 여부
+     * @apiSuccess {String} code API 응답 코드
+     * @apiSuccess {String} message API 응답 메시지
+     * @apiSuccess {String} obj 유저 정보를 담은 객체
+     * @apiSuccess {String} obj.email 이메일 아이디
+     * @apiSuccess {String} obj.pathCode 가입경로 코드(01: 이메일 로그인, 현재는 01만 존재)
+     *
+     * @apiParamExample {json} Request-Example:
+     *      {
+     *          "email": "guswlsapdlf@naver.com",
+     *          "phone": "01012341234"
+     *      }
+     *
+     * @apiSuccessExample {json} Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": true,
+     *          "code": "AU002",
+     *          "message": "성공적으로 조회되었습니다.",
+     *          "obj": {
+     *              "email": "guswlsapdlf@naver.com",
+     *              "pathCode": "01"
+     *          }
+     *      }
+     * @apiSuccessExample {json} False-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": false,
+     *          "code": "AU005",
+     *          "message": "조회 결과가 없습니다."
+     *      }
+     *
      */
-    @CrossOrigin
-    @PostMapping(value="/find/pw")
-    public ResponseEntity<?> FindPw(@RequestBody ReqFindPwDto dto) {
+    @PostMapping(value="/find/password")
+    public ResponseEntity<?> FindPw(@Valid @RequestBody FindDtos.RequestPw dto) {
         logger.info("FindPw {}", dto);
 
-        ApiInfo apiInfo = new ApiInfo();
+        ApiDto apiDto = new ApiDto();
 
-        ResFindPwDto user = this.authService.findPw(dto);
+        FindDtos.ResponseIdPw user = this.authService.findPw(dto);
 
         if (user != null) {
-            apiInfo.setSuccess(true);
-            apiInfo.setCode("SS01");
-            apiInfo.setMessage("조회에 성공하였습니다.");
+            apiDto.setSuccess(true);
+            apiDto.setCode(AuthResCode.AU002.name());
+            apiDto.setMessage(AuthResCode.AU002.getMessage());
+            apiDto.setObj(user);
         } else {
-            apiInfo.setSuccess(false);
-            apiInfo.setCode("SE02");
-            apiInfo.setMessage("가입 정보가 존재하지 않습니다.");
+            apiDto.setSuccess(false);
+            apiDto.setCode(AuthResCode.AU005.name());
+            apiDto.setMessage(AuthResCode.AU005.getMessage());
         }
 
-        logger.info("FindPw res ::: {}", apiInfo);
+        logger.info("FindPw res ::: {}", apiDto);
 
-        return new ResponseEntity<Object>(apiInfo, HttpStatus.OK);
+        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
     }
 
-    /**
-     * request: username, password
-     * response: apiInfo
-     * desc: 비밀번호 변경
-     *
-     {
-     "username": "guswlsapdlf@naver.com",
-     "password": "asdf"
-     }
-     */
-    @CrossOrigin
-    @PostMapping(value="/mod/pw")
-    public ResponseEntity<?> ModPw(@RequestBody ReqModPwDto dto) {
-        logger.info("ModPw {}", dto);
 
-        ApiInfo apiInfo = new ApiInfo();
+    /**
+     * @api {post} /v1/auth/modify/password 09.ModifyPw
+     * @apiName ModifyPw
+     * @apiGroup Auth
+     * @apiDescription 비밀번호 변경
+     *
+     * @apiParam {String} email 이메일 아이디
+     * @apiParam {String} password 새 비밀번호
+     *
+     * @apiSuccess {String} success API 성공 여부
+     * @apiSuccess {String} code API 응답 코드
+     * @apiSuccess {String} message API 응답 메시지
+     *
+     * @apiParamExample {json} Request-Example:
+     *      {
+     *          "email": "guswlsapdlf@naver.com",
+     *          "password": "asdf"
+     *      }
+     *
+     * @apiSuccessExample {json} Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": true,
+     *          "code": "AU003",
+     *          "message": "성공적으로 수정되었습니다."
+     *      }
+     * @apiSuccessExample {json} False-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": false,
+     *          "code": "",
+     *          "message": ""
+     *      }
+     *
+     */
+    @PostMapping(value="/modify/password")
+    public ResponseEntity<?> ModifyPw(@Valid @RequestBody ModifyDtos.RequestPw dto) {
+        logger.info("ModifyPw {}", dto);
+
+        ApiDto apiDto = new ApiDto();
 
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         int row = this.authService.modPw(dto);
 
         if (row == 1) {
-            apiInfo.setSuccess(true);
-            apiInfo.setCode("US01");
-            apiInfo.setMessage("수정에 성공하였습니다.");
+            apiDto.setSuccess(true);
+            apiDto.setCode(AuthResCode.AU003.name());
+            apiDto.setMessage(AuthResCode.AU003.getMessage());
         } else {
-            apiInfo.setSuccess(false);
-            apiInfo.setCode("UE99");
-            apiInfo.setMessage("수정 중 오류가 발생하였습니다. 담당자에게 문의해주세요.");
+            apiDto.setSuccess(false);
+            apiDto.setCode("UE99");
+            apiDto.setMessage("수정 중 오류가 발생하였습니다. 담당자에게 문의해주세요.");
         }
 
-        logger.info("ModPw res ::: {}", apiInfo);
+        logger.info("ModifyPw res ::: {}", apiDto);
 
-        return new ResponseEntity<Object>(apiInfo, HttpStatus.OK);
+        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
     }
 
-
+    
     /**
-     * request: username, accessToken, refreshToken
-     * response: apiInfo
-     * desc: 토큰 갱신
+     * @api {post} /v1/auth/refresh/token 10.RefreshToken
+     * @apiName RefreshToken
+     * @apiGroup Auth
+     * @apiDescription 토큰 갱신
      *
-     {
-     "username": "guswlsapdlf@naver.com",
-     "accessToken": "",
-     "refreshToken": ""
-     }
+     * @apiParam {String} email 이메일 아이디
+     * @apiParam {String} accessToken access token
+     * @apiParam {String} refreshToken refresh token
+     *
+     * @apiSuccess {String} success API 성공 여부
+     * @apiSuccess {String} code API 응답 코드
+     * @apiSuccess {String} message API 응답 메시지
+     * @apiSuccess {String} obj 새로 생성된 토큰 정보를 담은 객체
+     * @apiSuccess {String} obj.accessToken 새로 발급된 access token
+     *
+     * @apiParamExample {json} Request-Example:
+     *      {
+     *          "email": "guswlsapdlf@naver.com",
+     *          "accessToken": "(access token)",
+     *          "refreshToken": "(refresh token)"
+     *      }
+     *
+     * @apiSuccessExample {json} Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": true,
+     *          "code": "AU018",
+     *          "message": "access token이 정상적으로 재발급되었습니다.",
+     *          "obj": {
+     *              "accessToken": "(access token)"
+     *          }
+     *      }
+     * @apiSuccessExample {json} False-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": false,
+     *          "code": "AU019",
+     *          "message": "재로그인이 필요합니다."
+     *      }
+     *
      */
-    @CrossOrigin
-    @PostMapping(value="/token")
-    public ResponseEntity<?> GetToken(@RequestBody ReqTokenDto dto) {
-        logger.info("GetToken {}", dto);
+    @PostMapping(value="/refresh/token")
+    public ResponseEntity<?> RefreshToken(@Valid @RequestBody TokenDtos.RequestRenew dto) {
+        logger.info("RefreshToken {}", dto);
 
-        ApiInfo apiInfo = new ApiInfo();
+        ApiDto apiDto = new ApiDto();
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (tokenProvider.validateToken(dto.getRefreshToken())) {
-
             String access = tokenProvider.generateToken(auth, "ACCESS");
-            apiInfo.setObj(access);
 
-            apiInfo.setSuccess(true);
-            apiInfo.setCode("");
-            apiInfo.setMessage("access token이 정상적으로 발급되었습니다.");
+            TokenDtos.ResponseRenew res = new TokenDtos.ResponseRenew();
+            res.setAccessToken(access);
 
+            apiDto.setSuccess(true);
+            apiDto.setCode(AuthResCode.AU018.name());
+            apiDto.setMessage(AuthResCode.AU018.getMessage());
+            apiDto.setObj(res);
         } else {
-            apiInfo.setSuccess(false);
-            apiInfo.setCode("");
-            apiInfo.setMessage("재로그인이 필요합니다.");
+            apiDto.setSuccess(false);
+            apiDto.setCode(AuthResCode.AU019.name());
+            apiDto.setMessage(AuthResCode.AU019.getMessage());
         }
 
-        logger.info("GetToken res ::: {}", apiInfo);
+        logger.info("RefreshToken res ::: {}", apiDto);
 
-        return new ResponseEntity<Object>(apiInfo, HttpStatus.OK);
+        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
     }
 
 }

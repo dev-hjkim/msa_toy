@@ -1,7 +1,6 @@
 package com.fashion.celebrity.auth.common.security;
 
 import com.fashion.celebrity.auth.dto.UserDto;
-import com.fashion.celebrity.auth.dto.request.ReqLoginDto;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
