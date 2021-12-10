@@ -240,7 +240,7 @@ public class AuthController {
      * @apiDescription 회원가입
      *
      * @apiParam {String} email 이메일 아이디
-     * @apiParma {String} password 비밀번호
+     * @apiParam {String} password 비밀번호
      * @apiParam {String} nickname 별명
      * @apiParam {String} phone 핸드폰 번호('-' 제외)
      * @apiParam {String} gender 성별(0: 남성 / 1: 여성)
@@ -315,7 +315,7 @@ public class AuthController {
      * @apiDescription 로그인
      *
      * @apiParam {String} email 이메일 아이디
-     * @apiParma {String} password 비밀번호
+     * @apiParam {String} password 비밀번호
      *
      * @apiSuccess {String} success API 성공 여부
      * @apiSuccess {String} code API 응답 코드
