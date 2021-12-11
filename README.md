@@ -1,6 +1,11 @@
 # msa_toy
  :eyes: Apply MSA for backend project(eureka-server/client, Spring security)
  
+ 진행 단계
+ - auth 리팩토링
+ - MSA 구조 잡기
+ - api 명세 문서 띄울 서버 구축
+ 
  개발 고민 포인트  
  1. 도메인 쪼개기(어느 단위로?)  
  - 회원가입, 로그인, 아이디 찾기, 비밀번호 찾기, 아이디 중복체크 등은 모두 동일 도메인인가?
