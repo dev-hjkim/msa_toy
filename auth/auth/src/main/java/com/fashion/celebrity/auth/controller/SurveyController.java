@@ -1,6 +1,7 @@
 package com.fashion.celebrity.auth.controller;
 
 import com.fashion.celebrity.auth.common.dto.ApiDto;
+import com.fashion.celebrity.auth.common.dto.SurveyResCode;
 import com.fashion.celebrity.auth.dto.request.ReqSurveyDto;
 import com.fashion.celebrity.auth.dto.response.ResBadDto;
 import com.fashion.celebrity.auth.dto.response.ResColorDto;
@@ -30,7 +31,6 @@ public class SurveyController {
      * response: apiInfo(obj: goodCode, goodDesc)
      * desc: 자랑스러운점 리스트
      */
-    @CrossOrigin
     @GetMapping(value="/good-points")
     public ResponseEntity<?> GetGoodPointList() {
         logger.info("GetGoodPointList");
@@ -41,13 +41,13 @@ public class SurveyController {
 
         if (goodList.size() > 0) {
             apiDto.setSuccess(true);
-            apiDto.setCode("SS01");
-            apiDto.setMessage("성공적으로 조회하었습니다.");
+            apiDto.setCode(SurveyResCode.SV002.name());
+            apiDto.setMessage(SurveyResCode.SV002.getMessage());
             apiDto.setObj(goodList);
         } else {
             apiDto.setSuccess(false);
-            apiDto.setCode("");
-            apiDto.setMessage("조회에 오류가 발생하였습니다. 담당자에게 문의해주세요.");
+            apiDto.setCode(SurveyResCode.SV005.name());
+            apiDto.setMessage(SurveyResCode.SV005.getMessage());
         }
 
         logger.info("GetGoodPointList res ::: {}", apiDto);
@@ -60,7 +60,6 @@ public class SurveyController {
      * response: apiInfo(obj: badCode, badDesc)
      * desc: 보완할점 리스트
      */
-    @CrossOrigin
     @GetMapping(value="/bad-points")
     public ResponseEntity<?> GetBadPointList() {
         logger.info("GetBadPointList");
@@ -71,13 +70,13 @@ public class SurveyController {
 
         if (badList.size() > 0) {
             apiDto.setSuccess(true);
-            apiDto.setCode("SS01");
-            apiDto.setMessage("성공적으로 조회하었습니다.");
+            apiDto.setCode(SurveyResCode.SV002.name());
+            apiDto.setMessage(SurveyResCode.SV002.getMessage());
             apiDto.setObj(badList);
         } else {
             apiDto.setSuccess(false);
-            apiDto.setCode("");
-            apiDto.setMessage("조회에 오류가 발생하였습니다. 담당자에게 문의해주세요.");
+            apiDto.setCode(SurveyResCode.SV005.name());
+            apiDto.setMessage(SurveyResCode.SV005.getMessage());
         }
 
         logger.info("GetBadPointList res ::: {}", apiDto);
@@ -91,7 +90,6 @@ public class SurveyController {
      * response: apiInfo(obj: styleCode, styleDesc)
      * desc: 스타일 리스트
      */
-    @CrossOrigin
     @GetMapping(value="/styles")
     public ResponseEntity<?> GetStyleList() {
         logger.info("GetStyleList");
@@ -102,13 +100,13 @@ public class SurveyController {
 
         if (styleList.size() > 0) {
             apiDto.setSuccess(true);
-            apiDto.setCode("SS01");
-            apiDto.setMessage("성공적으로 조회하었습니다.");
+            apiDto.setCode(SurveyResCode.SV002.name());
+            apiDto.setMessage(SurveyResCode.SV002.getMessage());
             apiDto.setObj(styleList);
         } else {
             apiDto.setSuccess(false);
-            apiDto.setCode("");
-            apiDto.setMessage("조회에 오류가 발생하였습니다. 담당자에게 문의해주세요.");
+            apiDto.setCode(SurveyResCode.SV005.name());
+            apiDto.setMessage(SurveyResCode.SV005.getMessage());
         }
 
         logger.info("GetStyleList res ::: {}", apiDto);
@@ -122,7 +120,6 @@ public class SurveyController {
      * response: apiInfo(obj: colorCode, colorHex, colorDesc)
      * desc: 색깔 리스트
      */
-    @CrossOrigin
     @GetMapping(value="/colors")
     public ResponseEntity<?> GetColorList() {
         logger.info("GetColorList");
@@ -133,13 +130,13 @@ public class SurveyController {
 
         if (colorList.size() > 0) {
             apiDto.setSuccess(true);
-            apiDto.setCode("SS01");
-            apiDto.setMessage("성공적으로 조회하었습니다.");
+            apiDto.setCode(SurveyResCode.SV002.name());
+            apiDto.setMessage(SurveyResCode.SV002.getMessage());
             apiDto.setObj(colorList);
         } else {
             apiDto.setSuccess(false);
-            apiDto.setCode("");
-            apiDto.setMessage("조회에 오류가 발생하였습니다. 담당자에게 문의해주세요.");
+            apiDto.setCode(SurveyResCode.SV005.name());
+            apiDto.setMessage(SurveyResCode.SV005.getMessage());
         }
 
         logger.info("GetColorList res ::: {}", apiDto);
@@ -170,7 +167,6 @@ public class SurveyController {
      "color2": "11"
      }
      */
-    @CrossOrigin
     @PostMapping(value="/regist")
     public ResponseEntity<?> Regist(@RequestBody ReqSurveyDto dto) {
         logger.info("Regist {}", dto);
@@ -181,8 +177,8 @@ public class SurveyController {
             this.surveyService.createSurveyAnswer(dto);
 
             apiDto.setSuccess(true);
-            apiDto.setCode("CS01");
-            apiDto.setMessage("성공적으로 등록되었습니다.");
+            apiDto.setCode(SurveyResCode.SV001.name());
+            apiDto.setMessage(SurveyResCode.SV001.getMessage());
         } catch (Exception ex) {
             logger.info("{}", ex.getMessage());
             apiDto.setSuccess(false);
