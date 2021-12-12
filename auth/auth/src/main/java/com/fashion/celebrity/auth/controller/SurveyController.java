@@ -16,7 +16,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/survey")
+@RequestMapping("/v1/auth/survey")
 public class SurveyController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -28,6 +28,49 @@ public class SurveyController {
      * request:
      * response: apiInfo(obj: colorCode, colorHex, colorDesc)
      * desc: 색깔 리스트
+     */
+    /**
+     * @api {get} /v1/auth/survey/colors 01.GetColorList
+     * @apiName GetColorList
+     * @apiGroup Survey
+     * @apiDescription 색깔 리스트 조회
+     *
+     * @apiSuccess {String} success API 성공 여부
+     * @apiSuccess {String} code API 응답 코드
+     * @apiSuccess {String} message API 응답 메시지
+     * @apiSuccess {Object[]} obj 색깔 정보를 담은 리스트 객체
+     * @apiSuccess {String} obj.colorCode 색깔 코드
+     * @apiSuccess {String} obj.colorHex 16진수 색상코드
+     * @apiSuccess {String} obj.colorDesc 색깔명
+     *
+     *
+     * @apiSuccessExample {json} Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": true,
+     *          "code": "SV002",
+     *          "message": "성공적으로 조회되었습니다.",
+     *          "obj": [
+     *              {
+     *                  "colorCode": "C01",
+     *                  "colorHex": "#FFF2DF",
+     *                  "colorDesc": "크림",
+     *              },
+     *              {
+     *                  "colorCode": "C02",
+     *                  "colorHex": "#FFC8C8",
+     *                  "colorDesc": "핑크",
+     *              },
+     *              ...
+     *          ]
+     *      }
+     * @apiSuccessExample {json} False-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": false,
+     *          "code": "SV005",
+     *          "message": "조회 결과가 없습니다."
+     *      }
      */
     @GetMapping(value="/colors")
     public ResponseEntity<?> GetColorList() {
@@ -56,20 +99,46 @@ public class SurveyController {
 
 
     /**
-     * request: email, skinCode, height, weight,
-     *          colorCode1, colorCode2
-     * response: apiInfo
-     * desc: 설문결과 저장
+     * @api {get} /v1/auth/survey/regist 02.Regist
+     * @apiName Regist
+     * @apiGroup Survey
+     * @apiDescription 설문결과 저장
      *
+     * @apiParam {String} email 이메일 아이디
+     * @apiParam {String} skinCode 피부톤 코드
+     * @apiParam {int} height 키
+     * @apiParam {int} weight 몸무게
+     * @apiParam {String} colorCode1 선호 색깔 코드 1
+     * @apiParam {String} colorCode2 선호 색깔 코드 2
      *
-     {
-     "email": "asdf@naver.com"
-     "skinCode": "02",
-     "height": 155,
-     "weight": 43,
-     "colorCode1": "02",
-     "colorCode2": "11"
-     }
+     * @apiSuccess {String} success API 성공 여부
+     * @apiSuccess {String} code API 응답 코드
+     * @apiSuccess {String} message API 응답 메시지
+     *
+     * @apiParamExample {json} Request-Example:
+     *      {
+     *          "email": "asdf@naver.com",
+     *          "skinCode": "02",
+     *          "height": 155,
+     *          "weight": 43,
+     *          "colorCode1": "02",
+     *          "colorCode2": "11"
+     *      }
+     *
+     * @apiSuccessExample {json} Success-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": true,
+     *          "code": "SV001",
+     *          "message": "성공적으로 등록되었습니다."
+     *      }
+     * @apiSuccessExample {json} False-Response:
+     *      HTTP/1.1 200 OK
+     *      {
+     *          "success": false,
+     *          "code": "",
+     *          "message": ""
+     *      }
      */
     @PostMapping(value="/regist")
     public ResponseEntity<?> Regist(@Valid @RequestBody SurveyDtos.Request dto) {
