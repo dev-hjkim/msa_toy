@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/v1/auth")
+//@RequestMapping("/v1/auth")
 public class AuthController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

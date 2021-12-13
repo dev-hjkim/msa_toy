@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: config
+  profiles:
+    native
+  config:
+    server:
+      native:
+        searchLocations: classpath:/config
+server:
+  port: 8088

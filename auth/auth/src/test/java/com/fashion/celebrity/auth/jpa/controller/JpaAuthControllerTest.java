@@ -38,7 +38,7 @@ public class JpaAuthControllerTest {
                 .userId("guswlsapdlf@naver.com")
                 .build();
 
-        String url = "http://192.168.1.16:8001/jpa/validate/mail";
+        String url = "http://192.168.1.16:8000/v1/auth/jpa/validate/mail";
 
         // when
         ObjectMapper objectMapper = new ObjectMapper();

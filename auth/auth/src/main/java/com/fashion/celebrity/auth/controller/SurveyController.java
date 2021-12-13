@@ -16,7 +16,8 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/auth/survey")
+//@RequestMapping("/v1/auth/survey")
+@RequestMapping("/survey")
 public class SurveyController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
