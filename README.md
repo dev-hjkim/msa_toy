@@ -7,6 +7,10 @@
  ![image](https://user-images.githubusercontent.com/90509229/146050903-03fe84de-69ae-40a1-869e-ca747ce24b93.png)  
 
  - api 명세 문서 띄울 서버 구축(완) [api 명세](https://celebrity-apidoc.herokuapp.com/)
+
+ - TODO
+ - https://medium.com/@sheikarbaz5/spring-boot-with-tdd-test-driven-development-part-i-be1b90da51e
+ - https://stackabuse.com/test-driven-development-for-spring-boot-apis/
  
  개발 고민 포인트  
  1. 도메인 쪼개기(어느 단위로?)  
