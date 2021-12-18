@@ -9,9 +9,12 @@ eureka:
 spring:
   cloud:
     gateway:
+      discovery:
+        locator:
+          enabled: true
       routes:
         - id: auth
-          uri: http://localhost:${server.port}
+          uri: lb://auth
           predicates:
             - Path=/v1/auth/**
           filters:
