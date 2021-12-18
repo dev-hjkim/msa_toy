@@ -1,0 +1,1 @@
+web: java -Dserver.port=8080 -Dspring.profiles.active=native $JAVA_OPTS -jar config/config/build/libs/config.jar
