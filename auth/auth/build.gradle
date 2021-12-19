@@ -70,35 +70,35 @@ dependencyManagement {
 	}
 }
 
-asciidoctor {
-	inputs.dir snippetsDir
-	dependsOn test
-}
-
-asciidoctor.doFirst {
-	println("---------------- delete present asciidoctor.")
-	delete file('src/main/resources/static/docs')
-}
-
-asciidoctor.doLast {
-	println("---------------- asciidoctor is deleted!")
-}
-
-
-bootJar {
-	dependsOn asciidoctor
-	from ("${asciidoctor.outputDir}") {
-		into 'static/docs'
-	}
-}
-
-task copyDocument(type: Copy) { // 생성된 docs 파일을 build시 static 아래에 docs로 복사!
-	dependsOn bootJar
-
-	from file("build/docs/asciidoc/")
-	into file("src/main/resources/static/docs")
-}
-
-build {
-	dependsOn copyDocument // build시 copy 실행
-}
+//asciidoctor {
+//	inputs.dir snippetsDir
+//	dependsOn test
+//}
+//
+//asciidoctor.doFirst {
+//	println("---------------- delete present asciidoctor.")
+//	delete file('src/main/resources/static/docs')
+//}
+//
+//asciidoctor.doLast {
+//	println("---------------- asciidoctor is deleted!")
+//}
+//
+//
+//bootJar {
+//	dependsOn asciidoctor
+//	from ("${asciidoctor.outputDir}") {
+//		into 'static/docs'
+//	}
+//}
+//
+//task copyDocument(type: Copy) { // 생성된 docs 파일을 build시 static 아래에 docs로 복사!
+//	dependsOn bootJar
+//
+//	from file("build/docs/asciidoc/")
+//	into file("src/main/resources/static/docs")
+//}
+//
+//build {
+//	dependsOn copyDocument // build시 copy 실행
+//}

@@ -3,9 +3,11 @@ spring:
     name: config
   profiles:
     native
-  config:
-    server:
-      native:
-        searchLocations: classpath:/config
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/dev-hjkim/msa_toy_config
+          skipSslValidation: true
 server:
   port: 8088
