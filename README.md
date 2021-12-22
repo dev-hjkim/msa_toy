@@ -11,11 +11,11 @@
  - auth 서비스 boot 시간 줄이기
  - auth 리팩토링
 
- - TODO
+#### TODO  
  - https://medium.com/@sheikarbaz5/spring-boot-with-tdd-test-driven-development-part-i-be1b90da51e
  - https://stackabuse.com/test-driven-development-for-spring-boot-apis/
  
- 개발 고민 포인트  
+#### 개발 고민 포인트  
  1. 도메인 쪼개기(어느 단위로?)  
  - 회원가입, 로그인, 아이디 찾기, 비밀번호 찾기, 아이디 중복체크 등은 모두 동일 도메인인가?
  2. Mybatis vs JPA  
