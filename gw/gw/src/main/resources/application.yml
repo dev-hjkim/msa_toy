@@ -2,15 +2,13 @@ spring:
   application:
     name: gw
   cloud:
-    config:
-      enabled: false
     gateway:
       discovery:
         locator:
           enabled: true
       routes:
         - id: auth
-          uri: https://celebrity-auth.herokuapp.com
+          uri: lb://auth
           predicates:
             - Path=/v1/auth/**
           filters:
