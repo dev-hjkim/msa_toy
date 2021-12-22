@@ -1,0 +1,44 @@
+#version: '3'
+#
+#services:
+#  config:
+##    image: config
+#    build:
+#      context: /config/config
+#  eureka:
+#    build:
+#      context: /eureka/eureka
+##    image: eureka
+#    environment:
+#      - EUREKA_SERVER_NAME=eureka
+#      - EUREKA_PORT=8761
+#      - CONFIG_SERVER_NAME=config
+#      - CONFIG_PORT=8088
+#    depends_on:
+#      - config
+#  gw:
+#    build:
+#      context: /gw/gw
+#    environment:
+#      - EUREKA_SERVER_NAME=eureka
+#      - EUREKA_PORT=8761
+#      - GATEWAY_SERVER_NAME=gw
+#      - GATEWAY_PORT=8000
+#      - CONFIG_SERVER_NAME=config
+#      - CONFIG_PORT=8088
+#    depends_on:
+#      - eureka
+#    ports:
+#      - "8000:8000"
+#  auth:
+#    build:
+#      context: /auth/auth
+#    environment:
+#      - EUREKA_SERVER_NAME=eureka
+#      - EUREKA_PORT=8761
+#      - AUTH_SERVER_NAME=gw
+#      - AUTH_PORT=8001
+#      - CONFIG_SERVER_NAME=config
+#      - CONFIG_PORT=8088
+#    depends_on:
+#      - gw
