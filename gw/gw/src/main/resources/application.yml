@@ -2,6 +2,8 @@ spring:
   application:
     name: gw
   cloud:
+    config:
+      enabled: false
     gateway:
       discovery:
         locator:
