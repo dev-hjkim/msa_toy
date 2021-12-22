@@ -1,16 +1,16 @@
 spring:
   application:
     name: gw
-#  config:
-#    import: "optional:configserver:http://localhost:8088"
   cloud:
+    config:
+      enabled: false
     gateway:
       discovery:
         locator:
           enabled: true
       routes:
         - id: auth
-          uri: lb://auth
+          uri: https://celebrity-auth.herokuapp.com
           predicates:
             - Path=/v1/auth/**
           filters:
@@ -22,4 +22,4 @@ server:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: https://celebrity-eureka.herokuapp.com/eureka
