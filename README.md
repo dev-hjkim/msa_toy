@@ -2,7 +2,7 @@
  :eyes: Apply MSA for backend project(eureka-server/client, Spring security)
  
  진행 단계
- - MSA 구조 잡기  
+ - MSA 구조 잡기(변경 여지 有)  
  ![image](https://user-images.githubusercontent.com/90509229/146050903-03fe84de-69ae-40a1-869e-ca747ce24b93.png)  
 
  - api 명세 문서 띄울 서버 구축(완) [api 명세](https://celebrity-apidoc.herokuapp.com/)
