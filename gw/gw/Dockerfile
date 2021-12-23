@@ -15,4 +15,4 @@ FROM openjdk:11-jdk
 COPY --from=builder build/libs/*.jar gw.jar
 
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-ENTRYPOINT ["java", "-jar", "/gw.jar"]
+ENTRYPOINT ["java", "-Xmx256m", "-jar", "/gw.jar"]
