@@ -8,7 +8,8 @@
  - api 명세 문서 띄울 서버 구축(완) [api 명세](https://celebrity-apidoc.herokuapp.com/)
  - eureka 서버 올리기(완)
  - gw 서버 올리기(완)
- - auth 서비스 boot 시간 줄이기
+ - auth 서비스 boot 시간 줄이기(완, 변경 여지 有)
+ - 백엔드 서버 주소 apidoc에 업로드
  - auth 리팩토링
 
 #### TODO  
