@@ -15,4 +15,4 @@ FROM openjdk:11-jdk
 COPY --from=builder build/libs/*.jar auth.jar
 
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-ENTRYPOINT ["java", "-Xmx256m", "-jar", "/auth.jar"]
+ENTRYPOINT ["java", "-Xmx256m", "-jar", "-Dspring.profiles.active=dev", "/auth.jar"]

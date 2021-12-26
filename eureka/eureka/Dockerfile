@@ -15,4 +15,4 @@ FROM openjdk:11-jdk
 COPY --from=builder build/libs/*.jar eureka.jar
 
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-ENTRYPOINT ["java", "-Xmx256m", "-jar", "/eureka.jar"]
+ENTRYPOINT ["java", "-Xmx256m", "-jar", "-Dspring.profiles.active=dev", "/eureka.jar"]

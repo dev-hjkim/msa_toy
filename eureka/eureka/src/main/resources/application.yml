@@ -1,4 +1,49 @@
 spring:
+  profiles:
+    group:
+      "local": "local"
+
+---
+spring:
+  profiles:
+    group:
+      "dev":  "dev"
+
+---
+spring:
+  profiles:
+    group:
+      "prod": "prod"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "local"
+  application:
+    name: external
+  cloud:
+    config:
+      enabled: false
+
+server:
+  port: 8761
+
+eureka:
+  instance:
+    hostname: eureka
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "dev"
   application:
     name: eureka
   cloud:
@@ -17,3 +62,14 @@ eureka:
     fetchRegistry: false
     serviceUrl:
       defaultZone: https://celebrity-eureka.herokuapp.com/eureka
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "prod"
+  application:
+    name: eureka
+  cloud:
+    config:
+      enabled: false
