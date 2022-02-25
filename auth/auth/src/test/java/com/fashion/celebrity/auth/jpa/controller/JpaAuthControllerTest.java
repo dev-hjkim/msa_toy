@@ -22,7 +22,7 @@
 //import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 //import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 //
-//@RunWith(SpringRunner.class)
+//@RunWith(SpringRunner.class) <-junit4, junit5는 extendWith SpringExtension
 //@SpringBootTest
 //@AutoConfigureMockMvc
 //@AutoConfigureRestDocs
@@ -30,6 +30,8 @@
 //public class JpaAuthControllerTest {
 //    @Autowired
 //    private MockMvc mockMvc;
+//    @Autowired
+//    ObjectMapper om;
 //
 //    @Test
 //    public void validateMailTest() throws Exception {
@@ -41,11 +43,10 @@
 //        String url = "http://192.168.1.16:8000/v1/auth/jpa/validate/mail";
 //
 //        // when
-//        ObjectMapper objectMapper = new ObjectMapper();
 //
 //        ResultActions result = this.mockMvc.perform(
 //                post(url)
-//                        .content(objectMapper.writeValueAsString(requestDto))
+//                        .content(om.writeValueAsString(requestDto))
 //                        .contentType(MediaType.APPLICATION_JSON)
 //                        .accept(MediaType.APPLICATION_JSON)
 //        );
