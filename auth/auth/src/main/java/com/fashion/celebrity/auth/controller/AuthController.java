@@ -80,16 +80,13 @@ public class AuthController {
     @GetMapping(value="/validate/email")
     public ResponseEntity<?> ValidateEmail(@Valid ValidateDtos.RequestEmail dto) {
         logger.info("ValidateEmail {}", dto);
-
-        ApiDto apiDto = new ApiDto();
+        ApiDto apiDto;
 
         DupUserInfo user = this.authService.selectDupMail(dto);
 
         // 중복된 이메일 존재하는 경우
         if (user != null) {
-            apiDto.setSuccess(false);
-            apiDto.setCode(AuthResCode.AU006.name());
-            apiDto.setMessage(AuthResCode.AU006.getMessage());
+            apiDto = new ApiDto(false, AuthResCode.AU006);
         } else {
             try {
                 this.authService.createEmail(dto.getEmail());
@@ -98,19 +95,13 @@ public class AuthController {
                 sent = this.authService.sendEmail(dto);
 
                 if (sent) {
-                    apiDto.setSuccess(true);
-                    apiDto.setCode(AuthResCode.AU007.name());
-                    apiDto.setMessage(AuthResCode.AU007.getMessage());
+                    apiDto = new ApiDto(true, AuthResCode.AU007);
                 } else {
-                    apiDto.setSuccess(false);
-                    apiDto.setCode(AuthResCode.AU008.name());
-                    apiDto.setMessage(AuthResCode.AU008.getMessage());
+                    apiDto = new ApiDto(false, AuthResCode.AU008);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                apiDto.setSuccess(false);
-                apiDto.setCode(AuthResCode.AU008.name());
-                apiDto.setMessage(AuthResCode.AU008.getMessage());
+                apiDto = new ApiDto(false, AuthResCode.AU008);
             }
         }
 
@@ -156,19 +147,14 @@ public class AuthController {
     @PostMapping(value="/validate/check/email")
     public ResponseEntity<?> ValidateCheckEmail(@Valid @RequestBody ValidateCheckDtos.RequestEmail dto) {
         logger.info("ValidateCheckEmail {}", dto);
-
-        ApiDto apiDto = new ApiDto();
+        ApiDto apiDto;
 
         String certNum = this.authService.selectCertCode(dto.getEmail());
 
         if (certNum.equals(dto.getCertCode())) {
-            apiDto.setSuccess(true);
-            apiDto.setCode(AuthResCode.AU009.name());
-            apiDto.setMessage(AuthResCode.AU009.getMessage());
+            apiDto = new ApiDto(true, AuthResCode.AU009);
         } else {
-            apiDto.setSuccess(false);
-            apiDto.setCode(AuthResCode.AU010.name());
-            apiDto.setMessage(AuthResCode.AU010.getMessage());
+            apiDto = new ApiDto(false, AuthResCode.AU010);
         }
 
         logger.info("ValidateCheckEmail res ::: {}", apiDto);
