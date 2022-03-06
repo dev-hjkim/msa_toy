@@ -198,19 +198,14 @@ public class AuthController {
     @GetMapping(value="/validate/nickname")
     public ResponseEntity<?> ValidateNickname(@Valid ValidateDtos.RequestNickname dto) {
         logger.info("ValidateNickname {}", dto);
-
-        ApiDto apiDto = new ApiDto();
+        ApiDto apiDto;
 
         DupUserInfo user = this.authService.selectNickname(dto.getNickname());
 
         if (user != null) {
-            apiDto.setSuccess(false);
-            apiDto.setCode(AuthResCode.AU011.name());
-            apiDto.setMessage(AuthResCode.AU011.getMessage());
+            apiDto = new ApiDto(false, AuthResCode.AU011);
         } else {
-            apiDto.setSuccess(true);
-            apiDto.setCode(AuthResCode.AU012.name());
-            apiDto.setMessage(AuthResCode.AU012.getMessage());
+            apiDto = new ApiDto(true, AuthResCode.AU012);
         }
 
         logger.info("ValidateNickname res ::: {}", apiDto);
@@ -261,29 +256,23 @@ public class AuthController {
      *      HTTP/1.1 200 OK
      *      {
      *          "success": false,
-     *          "code": "",
-     *          "message": ""
+     *          "code": "AU020",
+     *          "message": "처리 중 오류가 발생하였습니다."
      *      }
      */
     @PostMapping(value="/signup")
     public ResponseEntity<?> Signup(@Valid @RequestBody SignupDtos.Request dto) {
         logger.info("Signup {}", dto);
-
-        ApiDto apiDto = new ApiDto();
+        ApiDto apiDto;
 
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         try {
             this.authService.createUser(dto);
-
-            apiDto.setSuccess(true);
-            apiDto.setCode(AuthResCode.AU001.name());
-            apiDto.setMessage(AuthResCode.AU001.getMessage());
+            apiDto = new ApiDto(true, AuthResCode.AU001);
         } catch (Exception ex) {
             ex.printStackTrace();
-            apiDto.setSuccess(false);
-            apiDto.setCode("CE99");
-            apiDto.setMessage("등록 중 오류가 발생했습니다. 담당자에게 문의해주세요.");
+            apiDto = new ApiDto(false, AuthResCode.AU020);
         }
 
         logger.info("Signup res ::: {}", apiDto);
@@ -364,8 +353,7 @@ public class AuthController {
     @PostMapping(value="/login")
     public ResponseEntity<?> Login(@Valid @RequestBody LoginDtos.Request dto) {
         logger.info("Login {}", dto);
-
-        ApiDto apiDto = new ApiDto();
+        ApiDto apiDto;
 
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -379,22 +367,13 @@ public class AuthController {
                 // 삭제 계정인지 체크
                 if (user.getStatus().equals("4")) {
                     logger.info("login ::: failed, deleted user, email {}", user.getEmail());
-
-                    apiDto.setSuccess(false);
-                    apiDto.setCode(AuthResCode.AU014.name());
-                    apiDto.setMessage(AuthResCode.AU014.getMessage());
+                    apiDto = new ApiDto(false, AuthResCode.AU014);
                 } else if(user.getStatus().equals("3")) {
                     logger.info("login ::: failed, temp user, email {}", user.getEmail());
-
-                    apiDto.setSuccess(false);
-                    apiDto.setCode(AuthResCode.AU015.name());
-                    apiDto.setMessage(AuthResCode.AU015.getMessage());
+                    apiDto = new ApiDto(false, AuthResCode.AU015);
                 } else {
                     logger.info("login ::: failed, locked user, email {}", user.getEmail());
-
-                    apiDto.setSuccess(false);
-                    apiDto.setCode(AuthResCode.AU016.name());
-                    apiDto.setMessage(AuthResCode.AU016.getMessage());
+                    apiDto = new ApiDto(false, AuthResCode.AU016);
                 }
             } else {
                 // 정상 로그인 성공
@@ -407,11 +386,7 @@ public class AuthController {
 
                 user.setAccessToken(access);
                 user.setRefreshToken(refresh);
-                apiDto.setObj(user);
-
-                apiDto.setSuccess(true);
-                apiDto.setCode(AuthResCode.AU013.name());
-                apiDto.setMessage(AuthResCode.AU013.getMessage());
+                apiDto = new ApiDto(true, AuthResCode.AU013, user);
             }
         } catch (Exception ex) {
             logger.error("ex {}", ex.getMessage());
@@ -423,22 +398,14 @@ public class AuthController {
                 if (dto.getCount() >= 5) {
                     dto.setStatus("1");
                     this.authService.updateUserStatus(dto);
-
-                    apiDto.setSuccess(false);
-                    apiDto.setCode(AuthResCode.AU017.name());
-                    apiDto.setMessage(AuthResCode.AU017.getMessage());
+                    apiDto = new ApiDto(false, AuthResCode.AU017);
                 } else {
-                    apiDto.setSuccess(false);
-                    apiDto.setCode(AuthResCode.AU014.name());
-                    apiDto.setMessage(AuthResCode.AU014.getMessage() + " (" + dto.getCount() + "회 실패)");
+                    apiDto = new ApiDto(false, AuthResCode.AU014);
                 }
             } catch (Exception ex2) {
                 logger.error("ex2 {}", ex2.getMessage());
                 logger.info("login ::: failed, typed email is not in db");
-
-                apiDto.setSuccess(false);
-                apiDto.setCode(AuthResCode.AU014.name());
-                apiDto.setMessage(AuthResCode.AU014.getMessage());
+                apiDto = new ApiDto(false, AuthResCode.AU014);
             }
         }
 
@@ -466,7 +433,6 @@ public class AuthController {
     @GetMapping(value="/logout")
     public ResponseEntity<?> Logout(@Valid LogoutDtos.Request dto) {
         logger.info("Logout {}", dto);
-
         logger.info("logout ::: email {}", dto.getEmail());
 
         this.authService.updateUserLogout(dto.getEmail());
@@ -519,20 +485,14 @@ public class AuthController {
     @PostMapping(value="/find/id")
     public ResponseEntity<?> FindId(@Valid @RequestBody FindDtos.RequestId dto) {
         logger.info("FindId {}", dto);
-
-        ApiDto apiDto = new ApiDto();
+        ApiDto apiDto;
 
         FindDtos.ResponseIdPw user = this.authService.findId(dto.getPhone());
 
         if (user != null) {
-            apiDto.setSuccess(true);
-            apiDto.setCode(AuthResCode.AU002.name());
-            apiDto.setMessage(AuthResCode.AU002.getMessage());
-            apiDto.setObj(user);
+            apiDto = new ApiDto(true, AuthResCode.AU002, user);
         } else {
-            apiDto.setSuccess(false);
-            apiDto.setCode(AuthResCode.AU005.name());
-            apiDto.setMessage(AuthResCode.AU005.getMessage());
+            apiDto = new ApiDto(false, AuthResCode.AU005);
         }
 
         logger.info("FindId res ::: {}", apiDto);
@@ -587,20 +547,14 @@ public class AuthController {
     @PostMapping(value="/find/password")
     public ResponseEntity<?> FindPw(@Valid @RequestBody FindDtos.RequestPw dto) {
         logger.info("FindPw {}", dto);
-
-        ApiDto apiDto = new ApiDto();
+        ApiDto apiDto;
 
         FindDtos.ResponseIdPw user = this.authService.findPw(dto);
 
         if (user != null) {
-            apiDto.setSuccess(true);
-            apiDto.setCode(AuthResCode.AU002.name());
-            apiDto.setMessage(AuthResCode.AU002.getMessage());
-            apiDto.setObj(user);
+            apiDto = new ApiDto(true, AuthResCode.AU002, user);
         } else {
-            apiDto.setSuccess(false);
-            apiDto.setCode(AuthResCode.AU005.name());
-            apiDto.setMessage(AuthResCode.AU005.getMessage());
+            apiDto = new ApiDto(false, AuthResCode.AU005);
         }
 
         logger.info("FindPw res ::: {}", apiDto);
@@ -639,29 +593,24 @@ public class AuthController {
      *      HTTP/1.1 200 OK
      *      {
      *          "success": false,
-     *          "code": "",
-     *          "message": ""
+     *          "code": "AU020",
+     *          "message": "처리 중 오류가 발생하였습니다."
      *      }
      *
      */
     @PostMapping(value="/modify/password")
     public ResponseEntity<?> ModifyPw(@Valid @RequestBody ModifyDtos.RequestPw dto) {
         logger.info("ModifyPw {}", dto);
-
-        ApiDto apiDto = new ApiDto();
+        ApiDto apiDto;
 
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         int row = this.authService.modPw(dto);
 
         if (row == 1) {
-            apiDto.setSuccess(true);
-            apiDto.setCode(AuthResCode.AU003.name());
-            apiDto.setMessage(AuthResCode.AU003.getMessage());
+            apiDto = new ApiDto(true, AuthResCode.AU003);
         } else {
-            apiDto.setSuccess(false);
-            apiDto.setCode("UE99");
-            apiDto.setMessage("수정 중 오류가 발생하였습니다. 담당자에게 문의해주세요.");
+            apiDto = new ApiDto(false, AuthResCode.AU020);
         }
 
         logger.info("ModifyPw res ::: {}", apiDto);
@@ -715,8 +664,7 @@ public class AuthController {
     @PostMapping(value="/refresh/token")
     public ResponseEntity<?> RefreshToken(@Valid @RequestBody TokenDtos.RequestRenew dto) {
         logger.info("RefreshToken {}", dto);
-
-        ApiDto apiDto = new ApiDto();
+        ApiDto apiDto;
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (tokenProvider.validateToken(dto.getRefreshToken())) {
@@ -725,14 +673,9 @@ public class AuthController {
             TokenDtos.ResponseRenew res = new TokenDtos.ResponseRenew();
             res.setAccessToken(access);
 
-            apiDto.setSuccess(true);
-            apiDto.setCode(AuthResCode.AU018.name());
-            apiDto.setMessage(AuthResCode.AU018.getMessage());
-            apiDto.setObj(res);
+            apiDto = new ApiDto(true, AuthResCode.AU018, res);
         } else {
-            apiDto.setSuccess(false);
-            apiDto.setCode(AuthResCode.AU019.name());
-            apiDto.setMessage(AuthResCode.AU019.getMessage());
+            apiDto = new ApiDto(false, AuthResCode.AU019);
         }
 
         logger.info("RefreshToken res ::: {}", apiDto);

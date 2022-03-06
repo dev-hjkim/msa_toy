@@ -19,7 +19,8 @@ public enum AuthResCode {
     AU016("잠금되었거나 중지된 계정입니다."),
     AU017("로그인 5회 이상 오류로 계정이 잠금되었습니다."),
     AU018("access token이 정상적으로 재발급되었습니다."),
-    AU019("재로그인이 필요합니다.");
+    AU019("재로그인이 필요합니다."),
+    AU020("처리 중 오류가 발생하였습니다.");
 
 
     private final String message;
