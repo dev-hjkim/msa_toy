@@ -6,6 +6,7 @@ import com.fashion.celebrity.auth.common.security.JwtTokenProvider;
 import com.fashion.celebrity.auth.dto.*;
 import com.fashion.celebrity.auth.model.DupUserInfo;
 import com.fashion.celebrity.auth.service.AuthService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,21 +22,22 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
+@RequiredArgsConstructor
 //@RequestMapping("/v1/auth")
 public class AuthController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    AuthService authService;
+    private final AuthService authService;
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
     @Autowired
-    JwtTokenProvider tokenProvider;
+    private final JwtTokenProvider tokenProvider;
 
 
     /**
@@ -78,7 +80,7 @@ public class AuthController {
      *      }
      */
     @GetMapping(value="/validate/email")
-    public ResponseEntity<?> ValidateEmail(@Valid ValidateDtos.RequestEmail dto) {
+    public ResponseEntity<Object> ValidateEmail(@Valid ValidateDtos.RequestEmail dto) {
         logger.info("ValidateEmail {}", dto);
         ApiDto apiDto;
 
@@ -107,7 +109,7 @@ public class AuthController {
 
         logger.info("ValidateEmail res ::: {}", apiDto);
 
-        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
+        return new ResponseEntity<>(apiDto, HttpStatus.OK);
     }
 
     /**
@@ -145,7 +147,7 @@ public class AuthController {
      *      }
      */
     @PostMapping(value="/validate/check/email")
-    public ResponseEntity<?> ValidateCheckEmail(@Valid @RequestBody ValidateCheckDtos.RequestEmail dto) {
+    public ResponseEntity<Object> ValidateCheckEmail(@Valid @RequestBody ValidateCheckDtos.RequestEmail dto) {
         logger.info("ValidateCheckEmail {}", dto);
         ApiDto apiDto;
 
@@ -159,7 +161,7 @@ public class AuthController {
 
         logger.info("ValidateCheckEmail res ::: {}", apiDto);
 
-        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
+        return new ResponseEntity<>(apiDto, HttpStatus.OK);
     }
 
     /**
@@ -196,7 +198,7 @@ public class AuthController {
      *
      */
     @GetMapping(value="/validate/nickname")
-    public ResponseEntity<?> ValidateNickname(@Valid ValidateDtos.RequestNickname dto) {
+    public ResponseEntity<Object> ValidateNickname(@Valid ValidateDtos.RequestNickname dto) {
         logger.info("ValidateNickname {}", dto);
         ApiDto apiDto;
 
@@ -210,7 +212,7 @@ public class AuthController {
 
         logger.info("ValidateNickname res ::: {}", apiDto);
 
-        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
+        return new ResponseEntity<>(apiDto, HttpStatus.OK);
     }
 
 
@@ -261,7 +263,7 @@ public class AuthController {
      *      }
      */
     @PostMapping(value="/signup")
-    public ResponseEntity<?> Signup(@Valid @RequestBody SignupDtos.Request dto) {
+    public ResponseEntity<Object> Signup(@Valid @RequestBody SignupDtos.Request dto) {
         logger.info("Signup {}", dto);
         ApiDto apiDto;
 
@@ -278,7 +280,7 @@ public class AuthController {
         logger.info("Signup res ::: {}", apiDto);
 
 
-        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
+        return new ResponseEntity<>(apiDto, HttpStatus.OK);
     }
 
 
@@ -351,7 +353,7 @@ public class AuthController {
      *      }
      */
     @PostMapping(value="/login")
-    public ResponseEntity<?> Login(@Valid @RequestBody LoginDtos.Request dto) {
+    public ResponseEntity<Object> Login(@Valid @RequestBody LoginDtos.Request dto) {
         logger.info("Login {}", dto);
         ApiDto apiDto;
 
@@ -411,7 +413,7 @@ public class AuthController {
 
         logger.info("Login res ::: {}", apiDto);
 
-        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
+        return new ResponseEntity<>(apiDto, HttpStatus.OK);
     }
 
 
@@ -483,7 +485,7 @@ public class AuthController {
      *
      */
     @PostMapping(value="/find/id")
-    public ResponseEntity<?> FindId(@Valid @RequestBody FindDtos.RequestId dto) {
+    public ResponseEntity<Object> FindId(@Valid @RequestBody FindDtos.RequestId dto) {
         logger.info("FindId {}", dto);
         ApiDto apiDto;
 
@@ -497,7 +499,7 @@ public class AuthController {
 
         logger.info("FindId res ::: {}", apiDto);
 
-        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
+        return new ResponseEntity<>(apiDto, HttpStatus.OK);
     }
 
 
@@ -545,7 +547,7 @@ public class AuthController {
      *
      */
     @PostMapping(value="/find/password")
-    public ResponseEntity<?> FindPw(@Valid @RequestBody FindDtos.RequestPw dto) {
+    public ResponseEntity<Object> FindPw(@Valid @RequestBody FindDtos.RequestPw dto) {
         logger.info("FindPw {}", dto);
         ApiDto apiDto;
 
@@ -559,7 +561,7 @@ public class AuthController {
 
         logger.info("FindPw res ::: {}", apiDto);
 
-        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
+        return new ResponseEntity<>(apiDto, HttpStatus.OK);
     }
 
 
@@ -599,7 +601,7 @@ public class AuthController {
      *
      */
     @PostMapping(value="/modify/password")
-    public ResponseEntity<?> ModifyPw(@Valid @RequestBody ModifyDtos.RequestPw dto) {
+    public ResponseEntity<Object> ModifyPw(@Valid @RequestBody ModifyDtos.RequestPw dto) {
         logger.info("ModifyPw {}", dto);
         ApiDto apiDto;
 
@@ -615,7 +617,7 @@ public class AuthController {
 
         logger.info("ModifyPw res ::: {}", apiDto);
 
-        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
+        return new ResponseEntity<>(apiDto, HttpStatus.OK);
     }
 
     
@@ -662,7 +664,7 @@ public class AuthController {
      *
      */
     @PostMapping(value="/refresh/token")
-    public ResponseEntity<?> RefreshToken(@Valid @RequestBody TokenDtos.RequestRenew dto) {
+    public ResponseEntity<Object> RefreshToken(@Valid @RequestBody TokenDtos.RequestRenew dto) {
         logger.info("RefreshToken {}", dto);
         ApiDto apiDto;
 
@@ -680,7 +682,7 @@ public class AuthController {
 
         logger.info("RefreshToken res ::: {}", apiDto);
 
-        return new ResponseEntity<Object>(apiDto, HttpStatus.OK);
+        return new ResponseEntity<>(apiDto, HttpStatus.OK);
     }
 
 }
